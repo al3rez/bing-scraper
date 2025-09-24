@@ -10,6 +10,7 @@ class Keyword < ApplicationRecord
   belongs_to :keyword_upload, inverse_of: :keywords
 
   has_one_attached :serp_html
+  has_many_attached :html_pages
 
   enum :status, STATUSES, prefix: :status
 
