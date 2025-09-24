@@ -1,4 +1,5 @@
-<% content_for :title, @keyword.phrase %>
+
+<% content_for :title, "#{@keyword.phrase} - Bing Scraper" %>
 
 <section class="w-full space-y-4"
          data-controller="keyword-updates"
@@ -85,16 +86,7 @@
       </div>
 
       <!-- Pagination -->
-      <% if @pagy.pages > 1 %>
-        <div class="border-t border-slate-200 px-4 py-3 flex items-center justify-between">
-          <div class="text-sm text-slate-600">
-            Showing <%= @pagy.from %> to <%= @pagy.to %> of <%= @pagy.count %> results
-          </div>
-          <div class="flex gap-1">
-            <%== pagy_nav(@pagy) %>
-          </div>
-        </div>
-      <% end %>
+      <%= render "shared/pagination", pagy: @pagy, item_name: "results" %>
     <% else %>
       <div class="p-4">
         <p class="text-sm text-slate-500">No results found</p>

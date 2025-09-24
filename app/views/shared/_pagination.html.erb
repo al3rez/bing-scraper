@@ -1,0 +1,35 @@
+<% if pagy.pages > 1 %>
+  <div class="border-t border-slate-200 px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div class="text-sm text-slate-600">
+      Showing <%= pagy.from %> to <%= pagy.to %> of <%= pagy.count %> <%= item_name %>
+    </div>
+    <nav class="flex items-center gap-1" aria-label="Pagination">
+      <% if pagy.prev %>
+        <%= link_to "← Previous", pagy_url_for(pagy, pagy.prev), class: "px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition" %>
+      <% else %>
+        <span class="px-3 py-2 text-sm font-medium text-slate-400 bg-slate-100 border border-slate-200 rounded-md cursor-not-allowed">← Previous</span>
+      <% end %>
+
+      <div class="flex items-center gap-1">
+        <% pagy.series.each do |item| %>
+          <% case item %>
+          <% when Integer %>
+            <% if item == pagy.page %>
+              <span class="px-3 py-2 text-sm font-semibold text-white bg-blue-600 border border-blue-600 rounded-md"><%= item %></span>
+            <% else %>
+              <%= link_to item, pagy_url_for(pagy, item), class: "px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition" %>
+            <% end %>
+          <% when String %>
+            <span class="px-3 py-2 text-sm text-slate-500">…</span>
+          <% end %>
+        <% end %>
+      </div>
+
+      <% if pagy.next %>
+        <%= link_to "Next →", pagy_url_for(pagy, pagy.next), class: "px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition" %>
+      <% else %>
+        <span class="px-3 py-2 text-sm font-medium text-slate-400 bg-slate-100 border border-slate-200 rounded-md cursor-not-allowed">Next →</span>
+      <% end %>
+    </nav>
+  </div>
+<% end %>
