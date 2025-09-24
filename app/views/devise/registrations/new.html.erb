@@ -1,10 +1,10 @@
 <% content_for :title, "Create account" %>
 
-<section class="mx-auto w-full max-w-md text-white">
-  <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-8 shadow-2xl shadow-slate-950/40">
+<section class="mx-auto w-full max-w-md text-slate-900">
+  <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
     <header class="mb-6 text-center">
-      <h1 class="text-2xl font-semibold">Create your account</h1>
-      <p class="mt-2 text-sm text-slate-300">Sign up to upload keyword lists and monitor Bing SERP metrics.</p>
+      <h1 class="text-2xl font-semibold text-slate-900">Create your account</h1>
+      <p class="mt-2 text-sm text-slate-600">Sign up to upload keyword lists and monitor Bing SERP metrics.</p>
     </header>
 
     <%= render "shared/flash" %>
@@ -13,29 +13,29 @@
       <%= render "devise/shared/error_messages", resource: resource %>
 
       <div>
-        <%= form.label :email, class: "block text-sm font-medium text-slate-200" %>
-        <%= form.email_field :email, autofocus: true, autocomplete: "email", class: "mt-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-blue-400 focus:outline-none" %>
+        <%= form.label :email, class: "block text-sm font-medium text-slate-700" %>
+        <%= form.email_field :email, autofocus: true, autocomplete: "email", class: "mt-2 w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100" %>
       </div>
 
       <div>
-        <%= form.label :password, class: "block text-sm font-medium text-slate-200" %>
+        <%= form.label :password, class: "block text-sm font-medium text-slate-700" %>
         <% if @minimum_password_length %>
-          <p class="mt-1 text-xs text-slate-400">Minimum <%= @minimum_password_length %> characters</p>
+          <p class="mt-1 text-xs text-slate-500">Minimum <%= @minimum_password_length %> characters</p>
         <% end %>
-        <%= form.password_field :password, autocomplete: "new-password", class: "mt-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-blue-400 focus:outline-none" %>
+        <%= form.password_field :password, autocomplete: "new-password", class: "mt-2 w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100" %>
       </div>
 
       <div>
-        <%= form.label :password_confirmation, class: "block text-sm font-medium text-slate-200" %>
-        <%= form.password_field :password_confirmation, autocomplete: "new-password", class: "mt-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-blue-400 focus:outline-none" %>
+        <%= form.label :password_confirmation, class: "block text-sm font-medium text-slate-700" %>
+        <%= form.password_field :password_confirmation, autocomplete: "new-password", class: "mt-2 w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100" %>
       </div>
 
-      <%= form.submit "Create account", class: "w-full rounded-lg bg-blue-500 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-blue-400" %>
+      <%= form.submit "Create account", class: "w-full rounded-lg bg-blue-600 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-blue-500" %>
     <% end %>
   </div>
 
-  <p class="mt-6 text-center text-sm text-slate-300">
+  <p class="mt-6 text-center text-sm text-slate-600">
     Already have an account?
-    <%= link_to "Sign in", new_session_path(resource_name), class: "text-blue-300 hover:text-blue-200" %>
+    <%= link_to "Sign in", new_session_path(resource_name), class: "font-medium text-blue-600 hover:text-blue-700" %>
   </p>
 </section>

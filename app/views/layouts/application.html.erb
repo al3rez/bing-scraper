@@ -18,38 +18,37 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen bg-slate-950 text-white">
-    <div class="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-10">
+  <body class="min-h-screen bg-slate-100 text-slate-900">
+    <div class="flex min-h-screen flex-col">
       <% if user_signed_in? %>
-        <nav class="mb-10 flex items-center justify-between">
-          <div class="flex items-center space-x-8">
-            <%= link_to "Bing Scraper", authenticated_root_path, class: "text-lg font-semibold text-white no-underline" %>
-            <div class="hidden items-center space-x-6 text-sm text-slate-300 sm:flex">
-              <%= link_to "Dashboard", authenticated_root_path, class: nav_link_class(authenticated_root_path) %>
-              <%= link_to "Keyword uploads", keyword_uploads_path, class: nav_link_class(keyword_uploads_path) %>
-              <%= link_to "Keywords", keywords_path, class: nav_link_class(keywords_path) %>
+        <nav class="border-b border-slate-200 bg-white">
+          <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-2">
+            <%= link_to "Bing Scraper", authenticated_root_path, class: "text-sm font-bold text-slate-900 no-underline" %>
+            <div class="flex items-center gap-3 text-xs text-slate-600">
+              <span class="hidden sm:inline"><%= current_user.email %></span>
+              <%= link_to "Sign out", destroy_user_session_path, data: {turbo_method: :delete}, class: "rounded border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-200 no-underline" %>
             </div>
-          </div>
-          <div class="flex items-center space-x-4 text-sm text-slate-300">
-            <span><%= current_user.email %></span>
-            <%= link_to "Sign out", destroy_user_session_path, data: {turbo_method: :delete}, class: "rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-slate-500 no-underline" %>
           </div>
         </nav>
       <% else %>
-        <header class="mb-10 text-center">
-          <%= link_to "Bing Scraper", unauthenticated_root_path, class: "text-2xl font-semibold text-white no-underline" %>
+        <header class="border-b border-slate-200 bg-white">
+          <div class="mx-auto max-w-6xl px-5 py-6 text-center">
+            <%= link_to "Bing Scraper", unauthenticated_root_path, class: "text-2xl font-semibold text-slate-900 no-underline" %>
+          </div>
         </header>
       <% end %>
 
-      <% unless devise_controller? && action_name == "new" %>
-        <div class="mb-6">
-          <%= render "shared/flash" %>
-        </div>
-      <% end %>
+      <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-4">
+        <% unless devise_controller? && action_name == "new" %>
+          <div class="mb-3">
+            <%= render "shared/flash" %>
+          </div>
+        <% end %>
 
-      <main class="flex-1">
-        <%= yield %>
-      </main>
+        <main class="flex-1">
+          <%= yield %>
+        </main>
+      </div>
     </div>
   </body>
 </html>
