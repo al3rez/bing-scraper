@@ -151,7 +151,3 @@ If I had more time:
 - Maybe add the optional API endpoints from the PRD
 
 But it does everything the requirements asked for, and it's production-ready as is.
-
----
-
-Built for a technical challenge. Shows production-ready web scraping at scale with solid Rails patterns and a clean UI.
