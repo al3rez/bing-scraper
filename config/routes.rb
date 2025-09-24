@@ -18,7 +18,11 @@ Rails.application.routes.draw do
     mount Sidekiq::Web => '/sidekiq'
   end
 
-  resources :keyword_uploads, only: [:create]
+  resources :keyword_uploads, only: [:create] do
+    collection do
+      post :validate
+    end
+  end
   resources :keywords, only: [:show] do
     member do
       get 'download_page/:page_id', to: 'keywords#download_page', as: :download_page
