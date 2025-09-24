@@ -1,0 +1,30 @@
+# PostgreSQL configuration using environment variables to stay 12-factor compliant.
+# Provide defaults for local development while requiring explicit credentials in production.
+
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+  url: <%= ENV["DATABASE_URL"] %>
+  host: <%= ENV.fetch("POSTGRES_HOST", "localhost") %>
+  port: <%= ENV.fetch("POSTGRES_PORT", 5432) %>
+  username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
+  password: <%= ENV.fetch("POSTGRES_PASSWORD", "postgres") %>
+  variables:
+    statement_timeout: <%= ENV.fetch("POSTGRES_STATEMENT_TIMEOUT", 15000) %>
+
+# Development database defaults to bing_scraper_development
+# Override via POSTGRES_DB or DATABASE_URL when needed.
+development:
+  <<: *default
+  database: <%= ENV.fetch("POSTGRES_DB", "bing_scraper_development") %>
+
+# Test database isolates the test suite.
+test:
+  <<: *default
+  database: <%= ENV.fetch("POSTGRES_TEST_DB", "bing_scraper_test") %>
+
+# Production configuration expects DATABASE_URL or explicit environment variables.
+production:
+  <<: *default
+  database: <%= ENV.fetch("POSTGRES_PRODUCTION_DB", "bing_scraper_production") %>
