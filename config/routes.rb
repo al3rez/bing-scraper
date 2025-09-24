@@ -1,4 +1,4 @@
-require 'sidekiq/web'
+require "sidekiq/web"
 
 Rails.application.routes.draw do
   devise_for :users
@@ -15,17 +15,17 @@ Rails.application.routes.draw do
 
   # Sidekiq Web UI (protected by authentication)
   authenticate :user do
-    mount Sidekiq::Web => '/sidekiq'
+    mount Sidekiq::Web => "/sidekiq"
   end
 
-  resources :keyword_uploads, only: [:create] do
+  resources :keyword_uploads, only: [ :create ] do
     collection do
       post :validate
     end
   end
-  resources :keywords, only: [:show] do
+  resources :keywords, only: [ :show ] do
     member do
-      get 'download_page/:page_id', to: 'keywords#download_page', as: :download_page
+      get "download_page/:page_id", to: "keywords#download_page", as: :download_page
     end
   end
 

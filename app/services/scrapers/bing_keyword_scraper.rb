@@ -65,44 +65,42 @@ module Scrapers
       html = nil
 
       loop do
-        begin
-          # Ensure ads are loaded before extraction (for subsequent pages)
-          ensure_ads_loaded(page) if current_page > 1
+        # Ensure ads are loaded before extraction (for subsequent pages)
+        ensure_ads_loaded(page) if current_page > 1
 
-          # Extract results from current page
-          page_links = extract_links(page, current_page)
-          page_ads = extract_ads(page, current_page)
+        # Extract results from current page
+        page_links = extract_links(page, current_page)
+        page_ads = extract_ads(page, current_page)
 
-          all_links.concat(page_links)
-          all_ads.concat(page_ads)
+        all_links.concat(page_links)
+        all_ads.concat(page_ads)
 
-          # Cache the current page HTML
-          html = page.body
+        # Cache the current page HTML
+        html = page.body
 
-          # Call progress callback after each page if provided
-          if progress_callback
-            progress_callback.call(
-              ads: all_ads.dup,
-              links: all_links.dup,
-              ads_count: all_ads.size,
-              links_count: all_links.size,
-              current_page: current_page,
-              html: html
-            )
-          end
-
-          # Stop if we have enough results or reached the last page we care about
-          break if all_links.size >= max_results || current_page >= max_pages
-
-          # Navigate to the next page; abort loop if navigation fails
-          break unless navigate_to_next_page(page, current_page + 1)
-
-          current_page += 1
-          simulate_page_view(page)
-        rescue Ferrum::Error => e
-          puts "[WARNING] Pagination error on page #{current_page}: #{e.message}"
-          break
+        # Call progress callback after each page if provided
+        if progress_callback
+          progress_callback.call(
+            ads: all_ads.dup,
+            links: all_links.dup,
+            ads_count: all_ads.size,
+            links_count: all_links.size,
+            current_page: current_page,
+            html: html
+          )
         end
+
+        # Stop if we have enough results or reached the last page we care about
+        break if all_links.size >= max_results || current_page >= max_pages
+
+        # Navigate to the next page; abort loop if navigation fails
+        break unless navigate_to_next_page(page, current_page + 1)
+
+        current_page += 1
+        simulate_page_view(page)
+      rescue Ferrum::Error => e
+        puts "[WARNING] Pagination error on page #{current_page}: #{e.message}"
+        break
       end
 
       # Limit results to the requested maximum
@@ -137,7 +135,7 @@ module Scrapers
           "--disable-dev-shm-usage" => nil,
           "--window-size" => "1280,720",
           "--no-sandbox" => nil,
-          "no-sandbox" => nil,
+          "no-sandbox" => nil
         }
       )
     end
@@ -258,7 +256,7 @@ module Scrapers
 
       # Wait for results to load on the new page
       wait_for(page, RESULTS_CONTAINER_SELECTOR)
-      
+
       true
     rescue Ferrum::Error => e
       puts "[DEBUG] Failed to navigate to page #{target_page}: #{e.message}"

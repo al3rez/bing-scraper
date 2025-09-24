@@ -8,8 +8,8 @@ class DashboardController < ApplicationController
 
     # KPIs
     @total_keywords = current_user.keywords.count
-    @processed_keywords = current_user.keywords.where.not(status: 'pending').count
+    @processed_keywords = current_user.keywords.where.not(status: "pending").count
     @total_uploads = current_user.keyword_uploads.count
-    @processing_rate = @total_keywords > 0 ? (@processed_keywords.to_f / @total_keywords * 100).round(1) : 0
+    @processing_rate = (@total_keywords > 0) ? (@processed_keywords.to_f / @total_keywords * 100).round(1) : 0
   end
 end

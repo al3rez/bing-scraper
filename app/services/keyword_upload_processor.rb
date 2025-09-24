@@ -80,5 +80,4 @@ class KeywordUploadProcessor
     # Update processed count immediately after each keyword
     upload.increment!(:processed_keywords_count)
   end
-
 end

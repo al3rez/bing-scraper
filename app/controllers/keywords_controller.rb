@@ -1,11 +1,11 @@
-require 'pagy/extras/array'
+require "pagy/extras/array"
 
 class KeywordsController < ApplicationController
   include ActionView::Helpers::DateHelper
   include Pagy::Backend
 
   before_action :authenticate_user!
-  before_action :set_keyword, only: [:show, :download_page]
+  before_action :set_keyword, only: [ :show, :download_page ]
 
   def index
     @keywords = current_user.keywords.recent_first.includes(:keyword_upload)
@@ -18,10 +18,10 @@ class KeywordsController < ApplicationController
     # Combine all results for pagination
     all_results = []
     @ads.each { |ad| all_results << ad.merge("result_type" => "ad") }
-    @links.each { |link| all_results << (link.is_a?(String) ? {"url" => link, "title" => link, "page" => 1, "result_type" => "organic"} : link.merge("result_type" => "organic")) }
+    @links.each { |link| all_results << (link.is_a?(String) ? { "url" => link, "title" => link, "page" => 1, "result_type" => "organic" } : link.merge("result_type" => "organic")) }
 
     # Sort by page, then ads first
-    sorted_results = all_results.sort_by { |r| [r["page"] || r[:page] || 1, r["result_type"] == "ad" ? 0 : 1] }
+    sorted_results = all_results.sort_by { |r| [ r["page"] || r[:page] || 1, (r["result_type"] == "ad") ? 0 : 1 ] }
 
     # Paginate results
     @pagy, @results = pagy_array(sorted_results, items: 20)
@@ -45,8 +45,8 @@ class KeywordsController < ApplicationController
   def download_page
     page_attachment = @keyword.html_pages.find(params[:page_id])
     send_data page_attachment.download,
-              filename: page_attachment.filename.to_s,
-              type: "text/html"
+      filename: page_attachment.filename.to_s,
+      type: "text/html"
   rescue ActiveRecord::RecordNotFound
     redirect_to @keyword, alert: "Page not found"
   end
@@ -94,5 +94,4 @@ class KeywordsController < ApplicationController
       "text-xs text-slate-600"
     end
   end
-
 end

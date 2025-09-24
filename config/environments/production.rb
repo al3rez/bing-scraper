@@ -16,7 +16,7 @@ Rails.application.configure do
   config.action_controller.perform_caching = true
 
   # Cache assets for far-future expiry since they are all digest stamped.
-  config.public_file_server.headers = {"cache-control" => "public, max-age=#{1.year.to_i}"}
+  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
@@ -34,7 +34,7 @@ Rails.application.configure do
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT with the current request id as a default log tag.
-  config.log_tags = [:request_id]
+  config.log_tags = [ :request_id ]
   config.logger = ActiveSupport::TaggedLogging.logger($stdout)
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!)
@@ -58,7 +58,7 @@ Rails.application.configure do
   default_host = ENV.fetch("DEFAULT_URL_HOST", "example.com")
   default_port = ENV.fetch("DEFAULT_URL_PORT", nil)
 
-  action_mailer_options = {host: default_host}
+  action_mailer_options = { host: default_host }
   action_mailer_options[:port] = default_port if default_port.present?
 
   config.action_mailer.default_url_options = action_mailer_options
@@ -80,7 +80,7 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Only use :id for inspections in production.
-  config.active_record.attributes_for_inspect = [:id]
+  config.active_record.attributes_for_inspect = [ :id ]
 
   # Disable SassC compression for Tailwind CSS compatibility
   config.assets.css_compressor = nil

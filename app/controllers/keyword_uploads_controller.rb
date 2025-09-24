@@ -63,7 +63,6 @@ class KeywordUploadsController < ApplicationController
     redirect_to authenticated_root_path, alert: "We couldn't process that file. Please try again."
   end
 
-
   private
 
   def keyword_upload_params
@@ -79,7 +78,7 @@ class KeywordUploadsController < ApplicationController
 
     # Content type validation
     allowed_types = %w[text/csv text/plain application/csv]
-    unless allowed_types.include?(file.content_type) || file.original_filename&.end_with?('.csv')
+    unless allowed_types.include?(file.content_type) || file.original_filename&.end_with?(".csv")
       raise ArgumentError, "File must be a CSV format"
     end
 
@@ -101,7 +100,7 @@ class KeywordUploadsController < ApplicationController
     end
 
     # Basic validation: should have some comma-separated or single-column data
-    valid_lines = lines.count { |line| line.strip.present? && (line.include?(',') || line.split.size == 1) }
+    valid_lines = lines.count { |line| line.strip.present? && (line.include?(",") || line.split.size == 1) }
 
     if valid_lines < 1
       raise ArgumentError, "File doesn't appear to contain valid CSV data"

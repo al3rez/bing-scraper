@@ -12,8 +12,8 @@ class KeywordUpload < ApplicationRecord
   enum :status, STATUSES, prefix: :status
 
   validates :original_filename, presence: true
-  validates :keyword_count, numericality: {greater_than_or_equal_to: 0, only_integer: true}
-  validates :processed_keywords_count, numericality: {greater_than_or_equal_to: 0, only_integer: true}
+  validates :keyword_count, numericality: { greater_than_or_equal_to: 0, only_integer: true }
+  validates :processed_keywords_count, numericality: { greater_than_or_equal_to: 0, only_integer: true }
 
   scope :recent_first, -> { order(created_at: :desc) }
 

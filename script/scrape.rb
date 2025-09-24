@@ -65,16 +65,16 @@ def scroll_to_bottom(page, steps: 3)
   end
   return unless total_height
 
-  steps = [steps, 3].max
+  steps = [ steps, 3 ].max
   current_position = begin
     page.evaluate("window.scrollY")
   rescue
     0
   end
-  step_size = [(total_height.to_f / steps).ceil, 200].max
+  step_size = [ (total_height.to_f / steps).ceil, 200 ].max
 
   steps.times do |index|
-    current_position = [current_position + step_size + rand(0..120), total_height].min
+    current_position = [ current_position + step_size + rand(0..120), total_height ].min
     page.evaluate("window.scrollTo(0, #{current_position})")
     page.network.wait_for_idle(timeout: 5)
     human_delay(min: 0.4, max: 1.2)

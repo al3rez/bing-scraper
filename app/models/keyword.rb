@@ -14,7 +14,7 @@ class Keyword < ApplicationRecord
   enum :status, STATUSES, prefix: :status
 
   validates :phrase, presence: true
-  validates :ads_count, :links_count, numericality: {greater_than_or_equal_to: 0, only_integer: true}
+  validates :ads_count, :links_count, numericality: { greater_than_or_equal_to: 0, only_integer: true }
 
   before_validation :normalize_phrase
 

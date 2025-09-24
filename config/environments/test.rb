@@ -16,7 +16,7 @@ Rails.application.configure do
   config.eager_load = ENV["CI"].present?
 
   # Configure public file server for tests with cache-control for performance.
-  config.public_file_server.headers = {"cache-control" => "public, max-age=3600"}
+  config.public_file_server.headers = { "cache-control" => "public, max-age=3600" }
 
   # Show full error reports.
   config.consider_all_requests_local = true
@@ -37,7 +37,7 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :test
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = {host: ENV.fetch("DEFAULT_URL_HOST", "example.com")}
+  config.action_mailer.default_url_options = { host: ENV.fetch("DEFAULT_URL_HOST", "example.com") }
 
   # Use the test adapter so ActiveJob assertions work with Sidekiq in production
   config.active_job.queue_adapter = :test

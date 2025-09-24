@@ -16,6 +16,6 @@ class CreateKeywords < ActiveRecord::Migration[8.0]
 
     add_index :keywords, :status
     add_index :keywords, :serp_digest
-    add_index :keywords, [:keyword_upload_id, :phrase], unique: true
+    add_index :keywords, [ :keyword_upload_id, :phrase ], unique: true
   end
 end
