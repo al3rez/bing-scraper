@@ -1,4 +1,15 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
+require 'simplecov'
+SimpleCov.start 'rails' do
+  add_filter '/spec/'
+  add_filter '/config/'
+  add_filter '/vendor/'
+  add_group 'Services', 'app/services'
+  add_group 'Controllers', 'app/controllers'
+  add_group 'Models', 'app/models'
+  add_group 'Jobs', 'app/jobs'
+end
+
 require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
@@ -26,7 +37,7 @@ Rails.application.reload_routes! if Devise.mappings.empty?
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
 #
-# Rails.root.glob('spec/support/**/*.rb').sort_by(&:to_s).each { |f| require f }
+Rails.root.glob('spec/support/**/*.rb').sort_by(&:to_s).each { |f| require f }
 
 # Ensures that the test database schema matches the current schema file.
 # If there are pending migrations it will invoke `db:test:prepare` to
@@ -43,8 +54,12 @@ RSpec.configure do |config|
     Rails.root.join('spec/fixtures')
   ]
 
+  # Include FactoryBot methods
+  config.include FactoryBot::Syntax::Methods
+
   config.include Devise::Test::IntegrationHelpers, type: :request
   config.include ActiveJob::TestHelper, type: :request
+  config.include ActiveJob::TestHelper, type: :job
 
   config.before(:each, type: :request) do
     ActiveJob::Base.queue_adapter = :test
