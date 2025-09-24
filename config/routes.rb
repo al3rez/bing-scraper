@@ -11,8 +11,12 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :keyword_uploads, only: [:index, :create]
-  resources :keywords, only: [:index]
+  resources :keyword_uploads, only: [:create]
+  resources :keywords, only: [:show] do
+    member do
+      get 'download_page/:page_id', to: 'keywords#download_page', as: :download_page
+    end
+  end
 
   get "up" => "rails/health#show", :as => :rails_health_check
 end

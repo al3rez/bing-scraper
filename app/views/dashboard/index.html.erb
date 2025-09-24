@@ -1,70 +1,111 @@
 <% content_for :title, "Dashboard" %>
 
-<section class="w-full">
-  <header class="mb-8 text-white">
-    <h1 class="text-3xl font-semibold mb-2">Welcome back, <%= current_user.email %></h1>
-    <p class="text-slate-300">Upload a keyword CSV to start scraping Bing SERPs. Recent activity is shown below.</p>
-  </header>
+<section class="w-full space-y-4">
+  <!-- KPIs -->
+  <div class="grid grid-cols-2 gap-2 lg:grid-cols-4">
+    <div class="rounded-lg border border-slate-200 bg-white p-3">
+      <p class="text-xl font-bold text-slate-900"><%= @total_keywords %></p>
+      <p class="text-xs text-slate-500">Total Keywords</p>
+    </div>
+    <div class="rounded-lg border border-slate-200 bg-white p-3">
+      <p class="text-xl font-bold text-green-600"><%= @processed_keywords %></p>
+      <p class="text-xs text-slate-500">Processed</p>
+    </div>
+    <div class="rounded-lg border border-slate-200 bg-white p-3">
+      <p class="text-xl font-bold text-blue-600"><%= @total_uploads %></p>
+      <p class="text-xs text-slate-500">Total Uploads</p>
+    </div>
+    <div class="rounded-lg border border-slate-200 bg-white p-3">
+      <p class="text-xl font-bold text-purple-600"><%= @processing_rate %>%</p>
+      <p class="text-xs text-slate-500">Success Rate</p>
+    </div>
+  </div>
 
-  <div class="grid gap-6 lg:grid-cols-2">
-    <article class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 text-white shadow-lg shadow-slate-900/40">
-      <header class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-medium">Recent Uploads</h2>
-        <%= link_to "View all", keyword_uploads_path, class: "text-sm text-blue-300 hover:text-blue-200" %>
-      </header>
+  <!-- Upload Form -->
+  <div class="rounded-lg border border-slate-200 bg-white p-4">
+    <h2 class="mb-2 text-sm font-medium text-slate-900">Upload CSV</h2>
+    <%= form_with scope: :keyword_upload, url: keyword_uploads_path, html: {multipart: true, class: "space-y-3"} do |form| %>
+      <div class="flex gap-2">
+        <%= form.file_field :file, required: true, accept: ".csv,text/csv", class: "flex-1 rounded border border-slate-300 bg-white px-3 py-2 text-xs" %>
+        <%= form.submit "Upload", class: "rounded bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-500" %>
+      </div>
+      <p class="text-xs text-slate-500">1-100 keywords per file. Processing starts immediately.</p>
+    <% end %>
+  </div>
 
-      <% if @keyword_uploads.any? %>
-        <ul class="space-y-3">
-          <% @keyword_uploads.each do |upload| %>
-            <li class="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-3">
-              <div>
-                <p class="font-medium"><%= upload.original_filename %></p>
-                <p class="text-xs text-slate-400">
-                  <%= upload.keyword_count %> keywords · <%= upload.status.humanize %>
-                </p>
-              </div>
-              <div class="text-right">
-                <p class="text-sm text-slate-300">
-                  <%= upload.progress_percent %>% processed
-                </p>
-                <p class="text-xs text-slate-500">
-                  <%= l(upload.created_at, format: :short) %>
-                </p>
-              </div>
-            </li>
-          <% end %>
-        </ul>
-      <% else %>
-        <p class="text-sm text-slate-400">No uploads yet. Upload your first CSV to kick off scraping.</p>
+  <!-- Keywords Table -->
+  <div class="rounded-lg border border-slate-200 bg-white">
+    <div class="border-b border-slate-200 px-4 py-3">
+      <h2 class="text-sm font-medium text-slate-900">Keywords</h2>
+    </div>
+
+    <% if @keywords.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200">
+          <thead class="bg-slate-50">
+            <tr>
+              <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-slate-500">KEYWORD</th>
+              <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-slate-500">ADS</th>
+              <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-slate-500">LINKS</th>
+              <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-slate-500">STATUS</th>
+              <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-slate-500">FROM</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <% @keywords.each do |keyword| %>
+              <tr class="hover:bg-slate-50">
+                <td class="px-3 py-2 text-xs font-medium text-slate-900">
+                  <%= link_to keyword.phrase, keyword_path(keyword), class: "text-blue-600 hover:text-blue-800 underline" %>
+                </td>
+                <td class="px-3 py-2 text-xs text-slate-600"><%= keyword.ads_count %></td>
+                <td class="px-3 py-2 text-xs text-slate-600"><%= keyword.links_count %></td>
+                <td class="px-3 py-2 text-xs">
+                  <% if keyword.status == "pending" %>
+                    <span class="inline-flex items-center gap-1 text-slate-500">
+                      <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>
+                      Queued
+                    </span>
+                  <% elsif keyword.status == "processing" %>
+                    <span class="inline-flex items-center gap-1 text-yellow-600">
+                      <span class="h-1.5 w-1.5 rounded-full bg-yellow-500 animate-pulse"></span>
+                      Scraping...
+                    </span>
+                  <% elsif keyword.status == "completed" && keyword.scraped_at %>
+                    <span class="inline-flex items-center gap-1 text-green-600">
+                      <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                      <%= time_ago_in_words(keyword.scraped_at) %> ago
+                    </span>
+                  <% elsif keyword.status == "failed" %>
+                    <span class="inline-flex items-center gap-1 text-red-600">
+                      <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                      Failed
+                    </span>
+                  <% else %>
+                    <span class="text-slate-400">-</span>
+                  <% end %>
+                </td>
+                <td class="px-3 py-2 text-xs text-slate-500 truncate max-w-32"><%= keyword.keyword_upload_original_filename %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <% if @pagy.pages > 1 %>
+        <div class="border-t border-slate-200 px-4 py-3 flex items-center justify-between">
+          <div class="text-xs text-slate-600">
+            Showing <%= @pagy.from %> to <%= @pagy.to %> of <%= @pagy.count %> keywords
+          </div>
+          <div class="flex gap-1">
+            <%== pagy_nav(@pagy) %>
+          </div>
+        </div>
       <% end %>
-    </article>
-
-    <article class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 text-white shadow-lg shadow-slate-900/40">
-      <header class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-medium">Recent Keywords</h2>
-        <%= link_to "Browse keywords", keywords_path, class: "text-sm text-blue-300 hover:text-blue-200" %>
-      </header>
-
-      <% if @recent_keywords.any? %>
-        <ul class="space-y-3">
-          <% @recent_keywords.each do |keyword| %>
-            <li class="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-3">
-              <div>
-                <p class="font-medium"><%= keyword.phrase %></p>
-                <p class="text-xs text-slate-400">
-                  Status: <%= keyword.status.humanize %>
-                </p>
-              </div>
-              <div class="text-right text-xs text-slate-500">
-                <p><%= pluralize(keyword.ads_count, "ad") %></p>
-                <p><%= pluralize(keyword.links_count, "link") %></p>
-              </div>
-            </li>
-          <% end %>
-        </ul>
-      <% else %>
-        <p class="text-sm text-slate-400">You'll see processed keywords here once scraping starts.</p>
-      <% end %>
-    </article>
+    <% else %>
+      <div class="p-4 text-xs text-slate-600">
+        No keywords yet. Upload a CSV to start scraping.
+      </div>
+    <% end %>
   </div>
 </section>

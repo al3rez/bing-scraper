@@ -1,42 +1,59 @@
 <% content_for :title, "Keywords" %>
 
-<section class="w-full text-white">
-  <header class="mb-6">
-    <h1 class="text-3xl font-semibold">Keywords</h1>
-    <p class="text-slate-300">Track scraping progress and metrics for each keyword.</p>
-  </header>
+<% if @keywords.any? { |k| k.status == "processing" } %>
+  <% content_for :head do %>
+    <meta http-equiv="refresh" content="3">
+  <% end %>
+<% end %>
 
+<section class="w-full space-y-4">
   <% if @keywords.any? %>
-    <div class="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 shadow-lg shadow-slate-900/40">
-      <table class="min-w-full divide-y divide-slate-800">
-        <thead class="bg-slate-900/60">
+    <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
           <tr>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Keyword</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Ads</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Links</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Status</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Uploaded From</th>
+            <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-slate-500">KEYWORD</th>
+            <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-slate-500">ADS</th>
+            <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-slate-500">LINKS</th>
+            <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-slate-500">STATUS</th>
+            <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-slate-500">FROM</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-800">
+        <tbody class="divide-y divide-slate-100">
           <% @keywords.each do |keyword| %>
-            <tr class="hover:bg-slate-900/70">
-              <td class="px-4 py-3 text-sm font-medium"><%= keyword.phrase %></td>
-              <td class="px-4 py-3 text-sm text-slate-300"><%= keyword.ads_count %></td>
-              <td class="px-4 py-3 text-sm text-slate-300"><%= keyword.links_count %></td>
-              <td class="px-4 py-3 text-sm">
-                <span class="inline-flex items-center rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200">
-                  <%= keyword.status.humanize %>
-                </span>
+            <tr class="hover:bg-slate-50">
+              <td class="px-3 py-2 text-xs font-medium text-slate-900">
+                <%= link_to keyword.phrase, keyword_path(keyword), class: "text-blue-600 hover:text-blue-800 underline" %>
               </td>
-              <td class="px-4 py-3 text-sm text-slate-400"><%= keyword.keyword_upload_original_filename %></td>
+              <td class="px-3 py-2 text-xs text-slate-600"><%= keyword.ads_count %></td>
+              <td class="px-3 py-2 text-xs text-slate-600"><%= keyword.links_count %></td>
+              <td class="px-3 py-2 text-xs">
+                <% if keyword.status == "processing" %>
+                  <span class="inline-flex rounded bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700 animate-pulse">
+                    Processing...
+                  </span>
+                <% elsif keyword.status == "completed" %>
+                  <span class="inline-flex rounded bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
+                    Completed
+                  </span>
+                <% elsif keyword.status == "failed" %>
+                  <span class="inline-flex rounded bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
+                    Failed
+                  </span>
+                <% else %>
+                  <span class="inline-flex rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600">
+                    <%= keyword.status.humanize %>
+                  </span>
+                <% end %>
+              </td>
+              <td class="px-3 py-2 text-xs text-slate-500 truncate max-w-32"><%= keyword.keyword_upload_original_filename %></td>
             </tr>
           <% end %>
         </tbody>
       </table>
     </div>
   <% else %>
-    <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 text-sm text-slate-300 shadow-lg shadow-slate-900/40">
+    <div class="rounded-lg border border-slate-200 bg-white p-4 text-xs text-slate-600">
       No keywords yet. Upload a CSV to start scraping.
     </div>
   <% end %>
