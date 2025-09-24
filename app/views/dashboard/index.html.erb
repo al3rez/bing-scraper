@@ -1,0 +1,70 @@
+<% content_for :title, "Dashboard" %>
+
+<section class="w-full">
+  <header class="mb-8 text-white">
+    <h1 class="text-3xl font-semibold mb-2">Welcome back, <%= current_user.email %></h1>
+    <p class="text-slate-300">Upload a keyword CSV to start scraping Bing SERPs. Recent activity is shown below.</p>
+  </header>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <article class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 text-white shadow-lg shadow-slate-900/40">
+      <header class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-medium">Recent Uploads</h2>
+        <%= link_to "View all", keyword_uploads_path, class: "text-sm text-blue-300 hover:text-blue-200" %>
+      </header>
+
+      <% if @keyword_uploads.any? %>
+        <ul class="space-y-3">
+          <% @keyword_uploads.each do |upload| %>
+            <li class="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-3">
+              <div>
+                <p class="font-medium"><%= upload.original_filename %></p>
+                <p class="text-xs text-slate-400">
+                  <%= upload.keyword_count %> keywords · <%= upload.status.humanize %>
+                </p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm text-slate-300">
+                  <%= upload.progress_percent %>% processed
+                </p>
+                <p class="text-xs text-slate-500">
+                  <%= l(upload.created_at, format: :short) %>
+                </p>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-sm text-slate-400">No uploads yet. Upload your first CSV to kick off scraping.</p>
+      <% end %>
+    </article>
+
+    <article class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 text-white shadow-lg shadow-slate-900/40">
+      <header class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-medium">Recent Keywords</h2>
+        <%= link_to "Browse keywords", keywords_path, class: "text-sm text-blue-300 hover:text-blue-200" %>
+      </header>
+
+      <% if @recent_keywords.any? %>
+        <ul class="space-y-3">
+          <% @recent_keywords.each do |keyword| %>
+            <li class="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-3">
+              <div>
+                <p class="font-medium"><%= keyword.phrase %></p>
+                <p class="text-xs text-slate-400">
+                  Status: <%= keyword.status.humanize %>
+                </p>
+              </div>
+              <div class="text-right text-xs text-slate-500">
+                <p><%= pluralize(keyword.ads_count, "ad") %></p>
+                <p><%= pluralize(keyword.links_count, "link") %></p>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-sm text-slate-400">You'll see processed keywords here once scraping starts.</p>
+      <% end %>
+    </article>
+  </div>
+</section>

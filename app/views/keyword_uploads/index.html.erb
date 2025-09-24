@@ -1,0 +1,62 @@
+<% content_for :title, "Keyword Uploads" %>
+
+<section class="w-full text-white">
+  <header class="mb-6">
+    <h1 class="text-3xl font-semibold">Keyword Uploads</h1>
+    <p class="text-slate-300">Review CSV uploads and their processing progress.</p>
+  </header>
+
+  <article class="mb-8 rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-lg shadow-slate-900/40">
+    <header class="mb-4">
+      <h2 class="text-xl font-medium">Upload a CSV</h2>
+      <p class="text-sm text-slate-400">Supports 1-100 keywords per file. We'll queue processing as soon as the upload finishes.</p>
+    </header>
+
+    <%= form_with scope: :keyword_upload, url: keyword_uploads_path, html: {multipart: true, class: "space-y-4"} do |form| %>
+      <div>
+        <%= form.label :file, "Keyword CSV", class: "block text-sm font-medium text-slate-200" %>
+        <%= form.file_field :file, required: true, accept: ".csv,text/csv", class: "mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 transition focus:border-blue-400 focus:outline-none" %>
+      </div>
+
+      <div class="flex items-center justify-between text-xs text-slate-400">
+        <span>We eliminate duplicates and start scraping immediately.</span>
+        <%= form.submit "Upload CSV", class: "rounded-lg border border-blue-500 bg-blue-500 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-blue-400" %>
+      </div>
+    <% end %>
+  </article>
+
+  <% if @keyword_uploads.any? %>
+    <div class="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 shadow-lg shadow-slate-900/40">
+      <table class="min-w-full divide-y divide-slate-800">
+        <thead class="bg-slate-900/60">
+          <tr>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Filename</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Keywords</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Progress</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Status</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Uploaded</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800">
+          <% @keyword_uploads.each do |upload| %>
+            <tr class="hover:bg-slate-900/70">
+              <td class="px-4 py-3 text-sm font-medium"><%= upload.original_filename %></td>
+              <td class="px-4 py-3 text-sm text-slate-300"><%= upload.keyword_count %></td>
+              <td class="px-4 py-3 text-sm text-slate-300"><%= upload.progress_percent %>%</td>
+              <td class="px-4 py-3 text-sm">
+                <span class="inline-flex items-center rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200">
+                  <%= upload.status.humanize %>
+                </span>
+              </td>
+              <td class="px-4 py-3 text-sm text-slate-400"><%= l(upload.created_at, format: :short) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 text-sm text-slate-300 shadow-lg shadow-slate-900/40">
+      No keyword uploads yet. Upload your first CSV to begin scraping.
+    </div>
+  <% end %>
+</section>

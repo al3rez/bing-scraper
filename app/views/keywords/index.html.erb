@@ -1,0 +1,43 @@
+<% content_for :title, "Keywords" %>
+
+<section class="w-full text-white">
+  <header class="mb-6">
+    <h1 class="text-3xl font-semibold">Keywords</h1>
+    <p class="text-slate-300">Track scraping progress and metrics for each keyword.</p>
+  </header>
+
+  <% if @keywords.any? %>
+    <div class="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 shadow-lg shadow-slate-900/40">
+      <table class="min-w-full divide-y divide-slate-800">
+        <thead class="bg-slate-900/60">
+          <tr>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Keyword</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Ads</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Links</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Status</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Uploaded From</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800">
+          <% @keywords.each do |keyword| %>
+            <tr class="hover:bg-slate-900/70">
+              <td class="px-4 py-3 text-sm font-medium"><%= keyword.phrase %></td>
+              <td class="px-4 py-3 text-sm text-slate-300"><%= keyword.ads_count %></td>
+              <td class="px-4 py-3 text-sm text-slate-300"><%= keyword.links_count %></td>
+              <td class="px-4 py-3 text-sm">
+                <span class="inline-flex items-center rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200">
+                  <%= keyword.status.humanize %>
+                </span>
+              </td>
+              <td class="px-4 py-3 text-sm text-slate-400"><%= keyword.keyword_upload_original_filename %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 text-sm text-slate-300 shadow-lg shadow-slate-900/40">
+      No keywords yet. Upload a CSV to start scraping.
+    </div>
+  <% end %>
+</section>
