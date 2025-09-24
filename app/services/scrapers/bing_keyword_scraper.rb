@@ -135,7 +135,8 @@ module Scrapers
         browser_options: {
           "--disable-gpu" => nil,
           "--disable-dev-shm-usage" => nil,
-          "--window-size" => "1280,720"
+          "--window-size" => "1280,720",
+          "--no-sandbox" => nil,
           "no-sandbox" => nil,
         }
       )
