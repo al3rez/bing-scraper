@@ -1,36 +1,63 @@
-<% content_for :title, "Dashboard" %>
+
+<% content_for :title, "Bing Scraper" %>
 
 <section class="w-full space-y-4">
-  <!-- KPIs -->
-  <div class="grid grid-cols-2 gap-2 lg:grid-cols-4">
-    <div class="rounded-lg border border-slate-200 bg-white p-3">
-      <p class="text-xl font-bold text-slate-900"><%= @total_keywords %></p>
-      <p class="text-sm text-slate-500">Total Keywords</p>
-    </div>
-    <div class="rounded-lg border border-slate-200 bg-white p-3">
-      <p class="text-xl font-bold text-green-600"><%= @processed_keywords %></p>
-      <p class="text-sm text-slate-500">Processed</p>
-    </div>
-    <div class="rounded-lg border border-slate-200 bg-white p-3">
-      <p class="text-xl font-bold text-blue-600"><%= @total_uploads %></p>
-      <p class="text-sm text-slate-500">Total Uploads</p>
-    </div>
-    <div class="rounded-lg border border-slate-200 bg-white p-3">
-      <p class="text-xl font-bold text-purple-600"><%= @processing_rate %>%</p>
-      <p class="text-sm text-slate-500">Success Rate</p>
-    </div>
-  </div>
-
-  <!-- Upload Form -->
-  <div class="rounded-lg border border-slate-200 bg-white p-4">
-    <h2 class="mb-2 text-lg font-medium text-slate-900">Upload CSV</h2>
-    <%= form_with scope: :keyword_upload, url: keyword_uploads_path, html: {multipart: true, class: "space-y-3"} do |form| %>
-      <div class="flex gap-2">
-        <%= form.file_field :file, required: true, accept: ".csv,text/csv", class: "flex-1 rounded border border-slate-300 bg-white px-3 py-2 text-sm" %>
-        <%= form.submit "Upload", class: "rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500" %>
+  <!-- Upload Form and KPIs Side by Side -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- Key Metrics -->
+    <div class="grid grid-cols-2 gap-2">
+      <div class="rounded-lg border border-slate-200 bg-white p-3">
+        <p class="text-xl font-bold text-slate-900"><%= @total_keywords %></p>
+        <p class="text-sm text-slate-500">Total Keywords</p>
       </div>
-      <p class="text-sm text-slate-500">1-100 keywords per file. Processing starts immediately.</p>
-    <% end %>
+      <div class="rounded-lg border border-slate-200 bg-white p-3">
+        <p class="text-xl font-bold text-purple-600"><%= @processing_rate %>%</p>
+        <p class="text-sm text-slate-500">Success Rate</p>
+      </div>
+      <div class="rounded-lg border border-slate-200 bg-white p-3">
+        <p class="text-xl font-bold text-green-600"><%= @processed_keywords %></p>
+        <p class="text-sm text-slate-500">Processed</p>
+      </div>
+      <div class="rounded-lg border border-slate-200 bg-white p-3">
+        <p class="text-xl font-bold text-blue-600"><%= @total_uploads %></p>
+        <p class="text-sm text-slate-500">Total Uploads</p>
+      </div>
+    </div>
+
+    <!-- Upload Form -->
+    <div class="rounded-lg border border-slate-200 bg-white p-4"
+         data-controller="file-upload"
+         data-file-upload-validate-url-value="<%= validate_keyword_uploads_path %>">
+      <h2 class="mb-2 text-lg font-medium text-slate-900">Upload CSV</h2>
+      <%= form_with scope: :keyword_upload, url: keyword_uploads_path, html: {multipart: true, class: "space-y-3"} do |form| %>
+        <%= form.file_field :file, required: true, accept: ".csv,text/csv", class: "hidden", data: { file_upload_target: "input" } %>
+
+        <div class="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-colors cursor-pointer"
+             data-file-upload-target="dropZone">
+          <div class="space-y-2">
+            <svg class="mx-auto h-12 w-12 text-slate-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+              <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+              <path d="M8 13h2"/>
+              <path d="M14 13h2"/>
+              <path d="M8 17h2"/>
+              <path d="M14 17h2"/>
+            </svg>
+            <div>
+              <p class="text-sm text-slate-600">
+                <span class="font-medium text-blue-600 hover:text-blue-500" data-file-upload-target="uploadText">Click to upload</span>
+                <span data-file-upload-target="fileName"> or drag and drop</span>
+              </p>
+              <p class="text-xs text-slate-400">CSV files only, 1-100 keywords per file</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between">
+          <%= form.submit "Scrape", class: "rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 opacity-50", data: { file_upload_target: "uploadBtn" }, disabled: true %>
+        </div>
+      <% end %>
+    </div>
   </div>
 
   <!-- Keywords Table -->
@@ -92,16 +119,7 @@
       </div>
 
       <!-- Pagination -->
-      <% if @pagy.pages > 1 %>
-        <div class="border-t border-slate-200 px-4 py-3 flex items-center justify-between">
-          <div class="text-sm text-slate-600">
-            Showing <%= @pagy.from %> to <%= @pagy.to %> of <%= @pagy.count %> keywords
-          </div>
-          <div class="flex gap-1">
-            <%== pagy_nav(@pagy) %>
-          </div>
-        </div>
-      <% end %>
+      <%= render "shared/pagination", pagy: @pagy, item_name: "keywords" %>
     <% else %>
       <div class="p-4 text-sm text-slate-600">
         No keywords yet. Upload a CSV to start scraping.
