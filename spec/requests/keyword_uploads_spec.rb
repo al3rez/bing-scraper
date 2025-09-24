@@ -56,7 +56,7 @@ RSpec.describe "KeywordUploads", type: :request do
         }
 
         expect(response).to redirect_to(authenticated_root_path)
-        expect(flash[:alert]).to match("No keywords found")
+        expect(flash[:alert]).to match("Invalid CSV file: File doesn't appear to contain valid CSV data")
 
         # Cleanup
         empty_file.close!
