@@ -28,10 +28,35 @@ class KeywordIngestionService
   attr_reader :user, :file_path, :original_filename
 
   def extract_phrases
-    raw_lines = CSV.read(file_path, headers: false).flatten
-    raw_lines.filter_map { |value| sanitize(value) }.uniq.first(MAX_KEYWORDS)
+    phrases = []
+    line_count = 0
+
+    # Stream CSV parsing to avoid loading entire file into memory
+    # Use CSV.header_row? to detect headers automatically
+    CSV.foreach(file_path, headers: :first_row) do |row|
+      # Skip if this is a header row
+      next if row.header_row?
+
+      line_count += 1
+
+      # Stop processing if we hit our limit to prevent memory issues
+      break if line_count > MAX_KEYWORDS + 10 # Small buffer for duplicates
+
+      # Extract and sanitize phrases from the row
+      row_phrases = row.fields.filter_map { |value| sanitize(value) }
+
+      # Only add non-empty phrases to avoid counting blank rows
+      phrases.concat(row_phrases) if row_phrases.any?
+
+      # Break early if we have enough unique phrases
+      break if phrases.uniq.size >= MAX_KEYWORDS
+    end
+
+    phrases.uniq.first(MAX_KEYWORDS)
   rescue Errno::ENOENT
     raise ArgumentError, "File not found: #{file_path}"
+  rescue CSV::MalformedCSVError => e
+    raise ArgumentError, "Invalid CSV format: #{e.message}"
   end
 
   def sanitize(value)
