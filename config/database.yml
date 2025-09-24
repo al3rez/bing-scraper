@@ -32,3 +32,4 @@ production:
 # Cable database configuration for Action Cable (uses same database)
 cable:
   <<: *default
+  database: <%= ENV.fetch("POSTGRES_PRODUCTION_DB", "bing_scraper_production") %>
