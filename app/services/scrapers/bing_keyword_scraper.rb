@@ -45,7 +45,7 @@ module Scrapers
       @browser = browser || build_browser(headless: headless)
     end
 
-    def call(query, max_results: MAX_TOTAL_RESULTS)
+    def call(query, max_results: MAX_TOTAL_RESULTS, &progress_callback)
       page = browser.create_page
       page.headers.set("User-Agent" => USER_AGENT)
 
@@ -55,6 +55,7 @@ module Scrapers
       wait_for(page, RESULTS_CONTAINER_SELECTOR)
 
       simulate_page_view(page)
+      ensure_ads_loaded(page)  # Ensure ads are loaded on first page
 
       all_links = []
       all_ads = []
@@ -65,15 +66,30 @@ module Scrapers
 
       loop do
         begin
+          # Ensure ads are loaded before extraction (for subsequent pages)
+          ensure_ads_loaded(page) if current_page > 1
+
           # Extract results from current page
-          page_links = extract_links(page)
-          page_ads = extract_ads(page)
+          page_links = extract_links(page, current_page)
+          page_ads = extract_ads(page, current_page)
 
           all_links.concat(page_links)
           all_ads.concat(page_ads)
 
           # Cache the current page HTML
           html = page.body
+
+          # Call progress callback after each page if provided
+          if progress_callback
+            progress_callback.call(
+              ads: all_ads.dup,
+              links: all_links.dup,
+              ads_count: all_ads.size,
+              links_count: all_links.size,
+              current_page: current_page,
+              html: html
+            )
+          end
 
           # Stop if we have enough results or reached the last page we care about
           break if all_links.size >= max_results || current_page >= max_pages
@@ -139,6 +155,15 @@ module Scrapers
       node
     end
 
+    def ensure_ads_loaded(page, timeout: 5)
+      wait_for(page, AD_CONTAINER_SELECTOR)
+      # Give ads a bit more time to fully render
+      sleep(0.5)
+    rescue Ferrum::TimeoutError => e
+      Rails.logger.debug "Ads did not load within #{timeout}s: #{e.message}"
+      nil
+    end
+
     def simulate_page_view(page)
       # mimic human scroll + mouse
       begin
@@ -155,19 +180,65 @@ module Scrapers
       human_delay
     end
 
-    def extract_links(page)
-      page.css(RESULT_SELECTOR).map { |a| a.attribute("href").to_s.strip }.reject(&:empty?)
-    end
+    def extract_links(page, page_number = 1)
+      page.css(RESULT_SELECTOR).map do |a|
+        href = a.attribute("href").to_s.strip
+        next if href.empty?
 
-    def extract_ads(page)
-      page.css(AD_CONTAINER_SELECTOR).map do |ad|
-        link = ad.at_css("a")
-        next unless link
+        # Get title from the link text
+        title = a.text.strip
+
+        # Try to find cite element in the same result container
+        # Look for cite element in the parent li or nearby elements
+        cite_text = nil
+        begin
+          # Try to find cite in parent elements by traversing up
+          current = a
+          5.times do # Limit search depth
+            parent = current.parent
+            break unless parent
+            cite_element = parent.at_css("cite")
+            if cite_element
+              cite_text = cite_element.text.strip
+              break
+            end
+            current = parent
+          end
+        rescue => e
+          # If cite lookup fails, continue without cite
+          cite_text = nil
+        end
+
         {
-          title: link.text.strip,
-          url: link.attribute("href").to_s.strip
+          url: href,
+          title: title.present? ? title : "Untitled",
+          cite: cite_text,
+          page: page_number
         }
       end.compact
+    end
+
+    def extract_ads(page, page_number = 1)
+      ads = []
+      page.css(AD_CONTAINER_SELECTOR).each do |container|
+        container.css("li").each do |item|
+          # Try multiple selectors for ad links, matching scrape.rb
+          primary_link = item.at_css(".mma_smallcard_title a, .smallmma_ad_title a, h2 a, h3 a, .b_title a")
+          next unless primary_link
+
+          href = primary_link.attribute("href").to_s.strip
+          title = primary_link.text.strip
+          next if href.empty? || title.empty?
+          next if href.include?("javascript:void") # Skip placeholder links
+
+          ads << {
+            title: title,
+            url: href,
+            page: page_number
+          }
+        end
+      end
+      ads
     end
 
     def navigate_to_next_page(page, target_page)

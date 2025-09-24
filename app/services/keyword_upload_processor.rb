@@ -41,18 +41,41 @@ class KeywordUploadProcessor
   def process_keyword(keyword)
     keyword.status_processing!
 
-    result = scraper.call(keyword.phrase)
-
-    keyword.transaction do
-      attach_html(keyword, result.html)
+    # Use progress callback to save incremental results after each page
+    result = scraper.call(keyword.phrase) do |progress_data|
+      # Save partial results after each page is scraped
       keyword.update!(
-        ads_count: result.ads_count,
-        links_count: result.links_count,
-        scraped_at: Time.current,
-        serp_digest: digest_for(result.html),
-        status: :completed,
-        error_message: nil
+        ads_count: progress_data[:ads_count],
+        links_count: progress_data[:links_count],
+        ads_data: progress_data[:ads],
+        links_data: progress_data[:links]
       )
+
+      # Store HTML for this page
+      if progress_data[:html].present?
+        keyword.html_pages.attach(
+          io: StringIO.new(progress_data[:html]),
+          filename: "#{keyword.phrase.parameterize}-page-#{progress_data[:current_page]}.html",
+          content_type: "text/html"
+        )
+      end
+    end
+
+    # Final update with completion status and HTML
+    keyword.update!(
+      ads_count: result.ads_count,
+      links_count: result.links_count,
+      ads_data: result.ads,
+      links_data: result.links,
+      scraped_at: Time.current,
+      status: :completed,
+      error_message: nil
+    )
+
+    # Handle HTML attachment separately (slower)
+    if result.html.present?
+      keyword.update!(serp_digest: digest_for(result.html))
+      attach_html(keyword, result.html)
     end
 
     logger&.info("Processed keyword ##{keyword.id} (#{keyword.phrase})")
@@ -60,6 +83,7 @@ class KeywordUploadProcessor
     keyword.update!(status: :failed, error_message: e.message)
     logger&.error("Failed to process keyword ##{keyword.id}: #{e.class} #{e.message}")
   ensure
+    # Update processed count immediately after each keyword
     upload.increment!(:processed_keywords_count)
   end
 
