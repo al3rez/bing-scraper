@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || (params[:keyword] ? "#{params[:keyword]} - Bing Scraper" : "Dashboard - Bing Scraper") %></title>
+    <title><%= content_for(:title) %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -22,14 +22,19 @@
       <% if user_signed_in? %>
         <nav class="border-b border-slate-200 bg-white">
           <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-2">
-            <%= link_to "Bing Scraper", authenticated_root_path, class: "text-lg font-bold text-slate-900 no-underline" %>
+            <%= link_to authenticated_root_path, class: "flex items-center gap-2 text-lg font-bold text-slate-900 no-underline" do %>
+              <svg aria-hidden="true" width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.4167 0C15.7555 0 20.0833 4.32792 20.0833 9.66667C20.0833 11.9759 19.2736 14.0959 17.9227 15.7584L24.4571 22.2929C24.8476 22.6835 24.8476 23.3165 24.4571 23.7071C24.1021 24.0621 23.5465 24.0944 23.1551 23.8039L23.0429 23.7071L16.5084 17.1727C14.8459 18.5236 12.7259 19.3333 10.4167 19.3333C5.07792 19.3333 0.75 15.0055 0.75 9.66667C0.75 4.32792 5.07792 0 10.4167 0ZM10.4167 2C6.18248 2 2.75 5.43248 2.75 9.66667C2.75 13.9008 6.18248 17.3333 10.4167 17.3333C14.6508 17.3333 18.0833 13.9008 18.0833 9.66667C18.0833 5.43248 14.6508 2 10.4167 2Z" fill="#767676"/>
+              </svg>
+              Bing Scraper
+            <% end %>
             <div class="flex items-center gap-3 text-sm text-slate-600">
               <span class="hidden sm:inline"><%= current_user.email %></span>
               <%= link_to "Sign out", destroy_user_session_path, data: {turbo_method: :delete}, class: "rounded border border-slate-200 bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700 transition hover:bg-slate-200 no-underline" %>
             </div>
           </div>
         </nav>
-      <% else %>
+      <% elsif !devise_controller? %>
         <header class="border-b border-slate-200 bg-white">
           <div class="mx-auto max-w-6xl px-5 py-6 text-center">
             <%= link_to "Bing Scraper", unauthenticated_root_path, class: "text-2xl font-semibold text-slate-900 no-underline" %>
@@ -44,7 +49,7 @@
           </div>
         <% end %>
 
-        <main class="flex-1">
+        <main class="<%= devise_controller? ? 'flex flex-1 items-center justify-center' : 'flex-1' %>">
           <%= yield %>
         </main>
       </div>
