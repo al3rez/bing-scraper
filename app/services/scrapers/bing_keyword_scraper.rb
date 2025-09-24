@@ -21,7 +21,7 @@ module Scrapers
     USER_AGENT = ENV.fetch("SCRAPER_USER_AGENT", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
     BASE_URL = "https://www.bing.com"
 
-    RESULT_SELECTOR = "#b_results > li> h2 > a"
+    RESULT_SELECTOR = "#b_results > li.b_algo h2 a"
     RESULTS_CONTAINER_SELECTOR = "#b_results"
     AD_CONTAINER_SELECTOR = "li.b_ad"
     PAGINATION_CONTAINER_SELECTOR = "#b_results > li.b_pag"
@@ -181,38 +181,19 @@ module Scrapers
     end
 
     def extract_links(page, page_number = 1)
-      page.css(RESULT_SELECTOR).map do |a|
+      # Get all organic results - Bing uses li.b_algo for organic results
+      # This naturally excludes ads which are in li.b_ad
+      page.css("#b_results > li.b_algo h2 a").map do |a|
         href = a.attribute("href").to_s.strip
         next if href.empty?
 
         # Get title from the link text
         title = a.text.strip
 
-        # Try to find cite element in the same result container
-        # Look for cite element in the parent li or nearby elements
-        cite_text = nil
-        begin
-          # Try to find cite in parent elements by traversing up
-          current = a
-          5.times do # Limit search depth
-            parent = current.parent
-            break unless parent
-            cite_element = parent.at_css("cite")
-            if cite_element
-              cite_text = cite_element.text.strip
-              break
-            end
-            current = parent
-          end
-        rescue => e
-          # If cite lookup fails, continue without cite
-          cite_text = nil
-        end
-
         {
           url: href,
           title: title.present? ? title : "Untitled",
-          cite: cite_text,
+          cite: nil,  # Simplified - cite extraction was causing issues with Ferrum
           page: page_number
         }
       end.compact
@@ -222,8 +203,8 @@ module Scrapers
       ads = []
       page.css(AD_CONTAINER_SELECTOR).each do |container|
         container.css("li").each do |item|
-          # Try multiple selectors for ad links, matching scrape.rb
-          primary_link = item.at_css(".mma_smallcard_title a, .smallmma_ad_title a, h2 a, h3 a, .b_title a")
+          # Try multiple selectors for ad links, including the new Bing ad structure
+          primary_link = item.at_css("h2.b_topTitleAd a, .mma_smallcard_title a, .smallmma_ad_title a, h2 a, h3 a, .b_title a")
           next unless primary_link
 
           href = primary_link.attribute("href").to_s.strip
