@@ -134,9 +134,9 @@ module Scrapers
         timeout: DEFAULT_TIMEOUT,
         browser_options: {
           "--disable-gpu" => nil,
-          "--no-sandbox" => nil,
           "--disable-dev-shm-usage" => nil,
           "--window-size" => "1280,720"
+          "no-sandbox" => nil,
         }
       )
     end
