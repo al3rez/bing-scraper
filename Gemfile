@@ -79,6 +79,7 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  gem "simplecov", require: false
 end
 
 gem "httparty", "~> 0.23.1"
@@ -88,3 +89,5 @@ gem "nokogiri", "~> 1.18"
 gem "standardrb", "~> 1.0"
 
 gem "ferrum", "~> 0.17.1"
+
+gem "factory_bot", "~> 6.5"

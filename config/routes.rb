@@ -1,3 +1,5 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
   devise_for :users
 
@@ -9,6 +11,11 @@ Rails.application.routes.draw do
     unauthenticated do
       root "devise/sessions#new", as: :unauthenticated_root
     end
+  end
+
+  # Sidekiq Web UI (protected by authentication)
+  authenticate :user do
+    mount Sidekiq::Web => '/sidekiq'
   end
 
   resources :keyword_uploads, only: [:create]

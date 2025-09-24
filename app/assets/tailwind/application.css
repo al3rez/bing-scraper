@@ -1,16 +1,74 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Chirp';
+  src: url('https://abs.twimg.com/fonts/chirp-regular-web.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Chirp';
+  src: url('https://abs.twimg.com/fonts/chirp-medium-web.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Chirp';
+  src: url('https://abs.twimg.com/fonts/chirp-bold-web.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Chirp';
+  src: url('https://abs.twimg.com/fonts/chirp-heavy-web.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     color-scheme: light;
   }
 
   body {
-    @apply bg-slate-100 text-slate-900 antialiased;
-    font-family: 'TX-02', monospace;
+    @apply bg-slate-100 text-slate-900 antialiased text-base;
+    font-family: 'Chirp', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   a {
     @apply underline-offset-4;
   }
+}
+
+/* Pagy Pagination Styling */
+.pagy-nav {
+  @apply flex gap-1 items-center;
+}
+
+.pagy-nav .page {
+  @apply text-sm px-3 py-1 border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 rounded;
+}
+
+.pagy-nav .page.current {
+  @apply bg-blue-50 text-blue-700 font-medium;
+}
+
+.pagy-nav .page.gap {
+  @apply border-none bg-transparent text-slate-400;
+}
+
+.pagy-nav .page.prev.disabled,
+.pagy-nav .page.next.disabled {
+  @apply bg-slate-100 text-slate-400 cursor-not-allowed hover:bg-slate-100;
+}
+
+.pagy-nav .page a {
+  @apply no-underline;
 }

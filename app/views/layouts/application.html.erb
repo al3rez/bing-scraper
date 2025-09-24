@@ -23,10 +23,10 @@
       <% if user_signed_in? %>
         <nav class="border-b border-slate-200 bg-white">
           <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-2">
-            <%= link_to "Bing Scraper", authenticated_root_path, class: "text-sm font-bold text-slate-900 no-underline" %>
-            <div class="flex items-center gap-3 text-xs text-slate-600">
+            <%= link_to "Bing Scraper", authenticated_root_path, class: "text-lg font-bold text-slate-900 no-underline" %>
+            <div class="flex items-center gap-3 text-sm text-slate-600">
               <span class="hidden sm:inline"><%= current_user.email %></span>
-              <%= link_to "Sign out", destroy_user_session_path, data: {turbo_method: :delete}, class: "rounded border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-200 no-underline" %>
+              <%= link_to "Sign out", destroy_user_session_path, data: {turbo_method: :delete}, class: "rounded border border-slate-200 bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700 transition hover:bg-slate-200 no-underline" %>
             </div>
           </div>
         </nav>

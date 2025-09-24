@@ -4,7 +4,7 @@ class DashboardController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @pagy, @keywords = pagy(current_user.keywords.recent_first.includes(:keyword_upload), items: 20)
+    @pagy, @keywords = pagy(current_user.keywords.active_first.includes(:keyword_upload), items: 20)
 
     # KPIs
     @total_keywords = current_user.keywords.count
