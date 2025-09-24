@@ -61,7 +61,7 @@ class KeywordUploadProcessor
       end
     end
 
-    # Final update with completion status and HTML
+    # Final update with completion status
     keyword.update!(
       ads_count: result.ads_count,
       links_count: result.links_count,
@@ -72,12 +72,6 @@ class KeywordUploadProcessor
       error_message: nil
     )
 
-    # Handle HTML attachment separately (slower)
-    if result.html.present?
-      keyword.update!(serp_digest: digest_for(result.html))
-      attach_html(keyword, result.html)
-    end
-
     logger&.info("Processed keyword ##{keyword.id} (#{keyword.phrase})")
   rescue => e
     keyword.update!(status: :failed, error_message: e.message)
@@ -87,19 +81,4 @@ class KeywordUploadProcessor
     upload.increment!(:processed_keywords_count)
   end
 
-  def attach_html(keyword, html)
-    return if html.blank?
-
-    keyword.serp_html.attach(
-      io: StringIO.new(html),
-      filename: "keyword-#{keyword.id}-#{Time.current.to_i}.html",
-      content_type: "text/html"
-    )
-  end
-
-  def digest_for(html)
-    return nil if html.blank?
-
-    Digest::SHA256.hexdigest(html)
-  end
 end
