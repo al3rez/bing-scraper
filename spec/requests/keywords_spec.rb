@@ -279,7 +279,7 @@ RSpec.describe 'Keywords', type: :request do
   end
 
   describe 'KeywordPresenter' do
-    context 'status_text' do
+    describe '#status_text' do
       it 'returns correct text for pending status' do
         keyword = build(:keyword, status: 'pending')
         presenter = KeywordPresenter.new(keyword)
@@ -318,7 +318,7 @@ RSpec.describe 'Keywords', type: :request do
       end
     end
 
-    context 'status_class' do
+    describe '#status_class' do
       it 'returns correct CSS classes for each status' do
         pending_keyword = build(:keyword, status: 'pending')
         expect(KeywordPresenter.new(pending_keyword).status_class).to eq('text-xs text-slate-600')

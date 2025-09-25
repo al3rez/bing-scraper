@@ -1,4 +1,5 @@
 require "rails_helper"
+require "nokogiri"
 
 RSpec.describe Scrapers::BingKeywordScraper, type: :service do
   describe "#call" do
@@ -159,6 +160,264 @@ RSpec.describe Scrapers::BingKeywordScraper, type: :service do
 
       expect(result.ads_count).to eq(0)
       expect(result.links_count).to eq(0)
+    end
+  end
+
+  # HTML Parsing Tests - merged from bing_keyword_scraper_html_parsing_spec.rb
+  describe "#extract_ads and #extract_links" do
+    before do
+      # Define mock classes for testing HTML parsing
+      noko_element_class = Class.new do
+        def initialize(element)
+          @element = element
+        end
+
+        def attribute(name)
+          AttributeWrapper.new(@element[name])
+        end
+
+        def text
+          @element.text.strip
+        end
+
+        def at_css(selector)
+          child = @element.at_css(selector)
+          child ? self.class.new(child) : nil
+        end
+
+        def css(selector)
+          @element.css(selector).map { |el| self.class.new(el) }
+        end
+
+        def parent
+          parent_el = @element.parent
+          parent_el ? self.class.new(parent_el) : nil
+        end
+      end
+
+      attribute_wrapper_class = Class.new do
+        def initialize(value)
+          @value = value
+        end
+
+        def to_s
+          @value.to_s
+        end
+      end
+
+      stub_const("NokoElement", noko_element_class)
+      stub_const("AttributeWrapper", attribute_wrapper_class)
+    end
+
+    describe "when parsing HTML with ads" do
+      it "extracts ads from real HTML" do
+        # Arrange
+        scraper = described_class.new(headless: true)
+        ads_html = File.read(Rails.root.join("spec/fixtures/files/with-ads.html"))
+        mock_page = create_html_mock_page(ads_html)
+
+        # Act
+        ads = scraper.send(:extract_ads, mock_page, 1)
+
+        # Assert
+        expect(ads).to be_an(Array)
+        expect(ads.length).to be > 0
+
+        first_ad = ads.first
+        expect(first_ad).to have_key(:title)
+        expect(first_ad).to have_key(:url)
+        expect(first_ad).to have_key(:page)
+        expect(first_ad[:page]).to eq(1)
+        expect(first_ad[:title]).to be_a(String)
+        expect(first_ad[:url]).to start_with("http")
+
+        # Cleanup
+        scraper.close
+      end
+
+      it "extracts organic links from real HTML" do
+        # Arrange
+        scraper = described_class.new(headless: true)
+        ads_html = File.read(Rails.root.join("spec/fixtures/files/with-ads.html"))
+        mock_page = create_html_mock_page(ads_html)
+
+        # Act
+        links = scraper.send(:extract_links, mock_page, 1)
+
+        # Assert
+        expect(links).to be_an(Array)
+        expect(links.length).to be > 0
+
+        first_link = links.first
+        expect(first_link).to have_key(:title)
+        expect(first_link).to have_key(:url)
+        expect(first_link).to have_key(:page)
+        expect(first_link[:page]).to eq(1)
+        expect(first_link[:title]).to be_a(String)
+        expect(first_link[:url]).to start_with("http")
+
+        # Cleanup
+        scraper.close
+      end
+    end
+
+    describe "when parsing HTML without ads" do
+      it "extracts no ads from HTML without ads" do
+        # Arrange
+        scraper = described_class.new(headless: true)
+        no_ads_html = File.read(Rails.root.join("spec/fixtures/files/without-ads.html"))
+        mock_page = create_html_mock_page(no_ads_html)
+
+        # Act
+        ads = scraper.send(:extract_ads, mock_page, 1)
+
+        # Assert
+        expect(ads).to be_an(Array)
+        expect(ads).to be_empty
+
+        # Cleanup
+        scraper.close
+      end
+
+      it "still extracts organic links from HTML without ads" do
+        # Arrange
+        scraper = described_class.new(headless: true)
+        no_ads_html = File.read(Rails.root.join("spec/fixtures/files/without-ads.html"))
+        mock_page = create_html_mock_page(no_ads_html)
+
+        # Act
+        links = scraper.send(:extract_links, mock_page, 1)
+
+        # Assert
+        expect(links).to be_an(Array)
+        expect(links.length).to be > 0
+
+        first_link = links.first
+        expect(first_link).to have_key(:title)
+        expect(first_link).to have_key(:url)
+        expect(first_link).to have_key(:page)
+        expect(first_link[:page]).to eq(1)
+
+        # Cleanup
+        scraper.close
+      end
+    end
+
+    describe "edge cases" do
+      context "when HTML has ads with various invalid links" do
+        it "filters out invalid ads" do
+          # Arrange
+          scraper = described_class.new(headless: true)
+          realistic_html = <<~HTML
+            <html>
+              <body>
+                <div id="b_results">
+                  <li class="b_ad">
+                    <ul>
+                      <li>
+                        <h2 class="b_topTitleAd"><a href="">Empty URL Ad</a></h2>
+                      </li>
+                      <li>
+                        <h2 class="b_topTitleAd"><a href="javascript:void(0)">JavaScript Ad</a></h2>
+                      </li>
+                      <li>
+                        <h2 class="b_topTitleAd"><a href="https://good-ad.com">Good Ad</a></h2>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="b_algo">
+                    <h2><a href="https://organic-result.com">Organic Result</a></h2>
+                  </li>
+                </div>
+              </body>
+            </html>
+          HTML
+          mock_page = create_html_mock_page(realistic_html)
+
+          # Act
+          ads = scraper.send(:extract_ads, mock_page, 1)
+
+          # Assert
+          expect(ads).to be_an(Array)
+          expect(ads.length).to eq(1)
+          expect(ads.first[:url]).to eq("https://good-ad.com")
+          expect(ads.first[:title]).to eq("Good Ad")
+
+          # Cleanup
+          scraper.close
+        end
+
+        it "extracts organic links normally" do
+          # Arrange
+          scraper = described_class.new(headless: true)
+          realistic_html = <<~HTML
+            <html>
+              <body>
+                <div id="b_results">
+                  <li class="b_ad">
+                    <ul>
+                      <li>
+                        <h2 class="b_topTitleAd"><a href="">Empty URL Ad</a></h2>
+                      </li>
+                      <li>
+                        <h2 class="b_topTitleAd"><a href="javascript:void(0)">JavaScript Ad</a></h2>
+                      </li>
+                      <li>
+                        <h2 class="b_topTitleAd"><a href="https://good-ad.com">Good Ad</a></h2>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="b_algo">
+                    <h2><a href="https://organic-result.com">Organic Result</a></h2>
+                  </li>
+                </div>
+              </body>
+            </html>
+          HTML
+          mock_page = create_html_mock_page(realistic_html)
+
+          # Act
+          links = scraper.send(:extract_links, mock_page, 1)
+
+          # Assert
+          expect(links).to be_an(Array)
+          expect(links.length).to eq(1)
+          expect(links.first[:url]).to eq("https://organic-result.com")
+          expect(links.first[:title]).to eq("Organic Result")
+
+          # Cleanup
+          scraper.close
+        end
+      end
+    end
+
+    private
+
+    def create_html_mock_page(html_content)
+      mock_page_class = Class.new do
+        def initialize(html_content)
+          @doc = Nokogiri::HTML(html_content)
+        end
+
+        def css(selector)
+          @doc.css(selector).map { |element| NokoElement.new(element) }
+        end
+
+        def at_css(selector)
+          element = @doc.at_css(selector)
+          element ? NokoElement.new(element) : nil
+        end
+
+        def body
+          @doc.to_s
+        end
+
+        def current_url
+          "https://www.bing.com/search?q=api+development"
+        end
+      end
+
+      mock_page_class.new(html_content)
     end
   end
 end
