@@ -13,6 +13,39 @@ Rails app that scrapes Bing search results at scale. Upload CSV of keywords, get
 
 **Rails 8** with Devise authentication, Sidekiq + Redis for background jobs, TailwindCSS for styling, PostgreSQL database, and Selenium + Chrome for scraping.
 
+## How it Works
+
+```mermaid
+flowchart TD
+    A[User uploads CSV] --> B[KeywordIngestionService parses CSV]
+    B --> C[Creates KeywordUpload record]
+    C --> D[ProcessKeywordUploadJob enqueued]
+    D --> E[Job processes each keyword]
+
+    E --> F[BingKeywordScraper.call]
+    F --> G[Creates Ferrum browser page]
+    G --> H[Navigate to Bing search]
+    H --> I[Wait for results to load]
+    I --> J[Simulate human behavior]
+    J --> K[Extract organic links]
+    K --> L[Extract ads]
+    L --> M{More pages needed?}
+
+    M -->|Yes| N[Navigate to next page]
+    N --> J
+    M -->|No| O[Return results]
+
+    O --> P[Update keyword status]
+    P --> Q[Store HTML capture]
+    Q --> R[Real-time UI updates]
+
+    style F fill:#e1f5fe
+    style G fill:#f3e5f5
+    style J fill:#fff3e0
+    style K fill:#e8f5e8
+    style L fill:#fff8e1
+```
+
 ## Running it locally
 
 ```bash
