@@ -21,8 +21,8 @@ class Api::V1::BaseController < ActionController::API
     return render_unauthorized unless token
 
     begin
-      decoded_token = JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: 'HS256' })
-      user_id = decoded_token.first['user_id']
+      decoded_token = JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: "HS256" })
+      user_id = decoded_token.first["user_id"]
       @current_user = User.find(user_id)
     rescue JWT::DecodeError, JWT::ExpiredSignature, ActiveRecord::RecordNotFound
       render_unauthorized
@@ -30,11 +30,11 @@ class Api::V1::BaseController < ActionController::API
   end
 
   def render_unauthorized
-    render json: { error: 'Unauthorized' }, status: :unauthorized
+    render json: { error: "Unauthorized" }, status: :unauthorized
   end
 
   def not_found
-    render json: { error: 'Not found' }, status: :not_found
+    render json: { error: "Not found" }, status: :not_found
   end
 
   def parameter_missing(exception)

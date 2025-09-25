@@ -15,7 +15,7 @@ class Api::V1::AuthenticationController < Api::V1::BaseController
         }
       }, status: :ok
     else
-      render json: { error: 'Invalid credentials' }, status: :unauthorized
+      render json: { error: "Invalid credentials" }, status: :unauthorized
     end
   end
 
@@ -33,6 +33,6 @@ class Api::V1::AuthenticationController < Api::V1::BaseController
       user_id: user.id,
       exp: 24.hours.from_now.to_i
     }
-    JWT.encode(payload, Rails.application.secret_key_base, 'HS256')
+    JWT.encode(payload, Rails.application.secret_key_base, "HS256")
   end
 end
