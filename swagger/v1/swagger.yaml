@@ -1,0 +1,300 @@
+openapi: '3.0.1'
+info:
+  title: Bing Scraper API V1
+  version: v1
+  description: API for managing keywords and scraping Bing search results
+  contact:
+    name: API Support
+    email: support@example.com
+servers:
+  - url: /api/v1
+    description: API V1
+paths:
+  "/auth/sign_in":
+    post:
+      summary: Sign in user
+      tags:
+        - Authentication
+      description: Authenticate user and return JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      example: user@example.com
+                    password:
+                      type: string
+                      example: password123
+                  required:
+                    - email
+                    - password
+              required:
+                - user
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiJ9...
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      email:
+                        type: string
+                        example: user@example.com
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid credentials
+  "/keywords":
+    get:
+      summary: Get list of keywords
+      tags:
+        - Keywords
+      description: Get paginated list of user's keywords
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keywords:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Keyword'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  "/keywords/{id}":
+    get:
+      summary: Get keyword details
+      tags:
+        - Keywords
+      description: Get detailed information about a specific keyword
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keyword:
+                    $ref: '#/components/schemas/KeywordDetail'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  "/keywords/{id}/search_results":
+    get:
+      summary: Get search results for keyword
+      tags:
+        - Keywords
+      description: Get detailed search result information for a specific keyword
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keyword:
+                    $ref: '#/components/schemas/Keyword'
+                  search_results:
+                    type: object
+                    properties:
+                      ads_count:
+                        type: integer
+                        example: 5
+                      links_count:
+                        type: integer
+                        example: 100
+                      html_pages_count:
+                        type: integer
+                        example: 1
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  "/keyword_uploads":
+    post:
+      summary: Upload keyword file
+      tags:
+        - Keyword Uploads
+      description: Upload a CSV file containing keywords for scraping
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: CSV file containing keywords (max 5MB)
+              required:
+                - file
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Keywords uploaded successfully! Scraping will begin shortly.
+                  upload:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      original_filename:
+                        type: string
+                        example: keywords.csv
+                      keywords_count:
+                        type: integer
+                        example: 50
+                      created_at:
+                        type: string
+                        format: date-time
+                        example: '2023-01-01T00:00:00.000Z'
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Keyword:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        phrase:
+          type: string
+          example: "ruby on rails"
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+          example: completed
+        ads_count:
+          type: integer
+          example: 5
+        links_count:
+          type: integer
+          example: 100
+        upload_filename:
+          type: string
+          example: keywords.csv
+        created_at:
+          type: string
+          format: date-time
+          example: '2023-01-01T00:00:00.000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2023-01-01T00:00:00.000Z'
+    KeywordDetail:
+      allOf:
+        - $ref: '#/components/schemas/Keyword'
+        - type: object
+          properties:
+            has_html_pages:
+              type: boolean
+              example: true
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Error message
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
