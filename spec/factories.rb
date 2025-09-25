@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :user do
-    email { "test@example.com" }
+    sequence(:email) { |n| "test#{n}@example.com" }
     password { "password123" }
     password_confirmation { "password123" }
   end
@@ -8,8 +8,8 @@ FactoryBot.define do
   factory :keyword_upload do
     user
     original_filename { "test.csv" }
-    status { "pending" }
-    keywords_count { 1 }
+    status { "queued" }
+    keyword_count { 1 }
     processed_keywords_count { 0 }
   end
 
