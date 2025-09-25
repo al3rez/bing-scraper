@@ -13,7 +13,7 @@ class DashboardController < ApplicationController
     @processing_rate = (@total_keywords > 0) ? (@processed_keywords.to_f / @total_keywords * 100).round(1) : 0
 
     # Check if we have pending/processing keywords for polling
-    @has_pending_keywords = current_user.keywords.where(status: [:pending, :processing]).exists?
+    @has_pending_keywords = current_user.keywords.where(status: [ :pending, :processing ]).exists?
 
     respond_to do |format|
       format.html

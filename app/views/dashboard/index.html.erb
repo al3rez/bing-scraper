@@ -5,6 +5,27 @@
         data-controller="dashboard-updates"
         data-dashboard-updates-url-value="<%= authenticated_root_path(format: :json) %>"
         data-has-pending-keywords="<%= @has_pending_keywords %>">
+  <!-- API Documentation Notice -->
+  <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 mb-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <svg class="w-6 h-6 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <div>
+          <h3 class="text-sm font-medium text-blue-800">API Documentation Available</h3>
+          <p class="text-sm text-blue-600">Interactive Swagger UI for testing API endpoints</p>
+        </div>
+      </div>
+      <a href="/api-docs" target="_blank" class="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-300 rounded-md hover:bg-blue-50">
+        View API Docs
+        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+
   <!-- Upload Form and KPIs Side by Side -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
     <!-- Key Metrics -->
