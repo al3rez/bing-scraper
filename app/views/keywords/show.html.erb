@@ -1,5 +1,5 @@
 
-<% content_for :title, "#{@keyword.phrase} - Bing Scraper" %>
+<% content_for :title, "#{sanitize(@keyword.phrase)} - Bing Scraper" %>
 
 <section class="w-full space-y-4"
          data-controller="keyword-updates"
@@ -8,7 +8,7 @@
   <header class="rounded-lg border border-slate-200 bg-white px-4 py-3">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-xl font-medium text-slate-900"><%= @keyword.phrase %></h1>
+        <h1 class="text-xl font-medium text-slate-900"><%= sanitize(@keyword.phrase) %></h1>
         <p class="text-sm text-slate-600">
           <span data-keyword-updates-target="adsCount"><%= @keyword.ads_count %></span> ads ·
           <span data-keyword-updates-target="linksCount"><%= @keyword.links_count %></span> links ·
