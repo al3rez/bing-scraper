@@ -157,7 +157,8 @@ module Scrapers
     def ensure_ads_loaded(page, timeout: 5)
       wait_for(page, AD_CONTAINER_SELECTOR)
       # Give ads a bit more time to fully render
-      sleep(0.5)
+      ads_load_delay = ENV.fetch("SCRAPER_ADS_LOAD_DELAY", 0.5).to_f
+      sleep(ads_load_delay) if ads_load_delay > 0
     rescue Ferrum::TimeoutError => e
       Rails.logger.debug "Ads did not load within #{timeout}s: #{e.message}"
       nil

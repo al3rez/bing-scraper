@@ -57,9 +57,32 @@ RSpec.configure do |config|
   # Include FactoryBot methods
   config.include FactoryBot::Syntax::Methods
 
+  # Performance optimizations
+  config.before(:suite) do
+    # Disable garbage collection during tests
+    GC.disable if ENV['DISABLE_GC'] == 'true'
+
+    # Preload factories to avoid loading during tests
+    FactoryBot.reload
+
+    # Speed up scraper tests by eliminating delays
+    ENV['SCRAPER_DELAY_MIN_SECONDS'] = '0'
+    ENV['SCRAPER_DELAY_MAX_SECONDS'] = '0'
+    ENV['SCRAPER_TIMEOUT_SECONDS'] = '1'
+    ENV['SCRAPER_WAIT_TIMEOUT'] = '1'
+    ENV['SCRAPER_WAIT_STEP'] = '0.01'
+    ENV['SCRAPER_ADS_LOAD_DELAY'] = '0'
+  end
+
+  config.after(:suite) do
+    # Re-enable garbage collection
+    GC.enable if ENV['DISABLE_GC'] == 'true'
+  end
+
   config.include Devise::Test::IntegrationHelpers, type: :request
   config.include ActiveJob::TestHelper, type: :request
   config.include ActiveJob::TestHelper, type: :job
+  config.include ScraperHelper, type: :service
 
   config.before(:each, type: :request) do
     ActiveJob::Base.queue_adapter = :test
