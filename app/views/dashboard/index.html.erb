@@ -1,25 +1,28 @@
 
 <% content_for :title, "Bing Scraper" %>
 
-<section class="w-full space-y-4">
+<section class="w-full space-y-4"
+        data-controller="dashboard-updates"
+        data-dashboard-updates-url-value="<%= authenticated_root_path(format: :json) %>"
+        data-has-pending-keywords="<%= @has_pending_keywords %>">
   <!-- Upload Form and KPIs Side by Side -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
     <!-- Key Metrics -->
     <div class="grid grid-cols-2 gap-2">
       <div class="rounded-lg border border-slate-200 bg-white p-3">
-        <p class="text-xl font-bold text-slate-900"><%= @total_keywords %></p>
+        <p class="text-xl font-bold text-slate-900" data-dashboard-updates-target="totalKeywords"><%= @total_keywords %></p>
         <p class="text-sm text-slate-500">Total Keywords</p>
       </div>
       <div class="rounded-lg border border-slate-200 bg-white p-3">
-        <p class="text-xl font-bold text-purple-600"><%= @processing_rate %>%</p>
+        <p class="text-xl font-bold text-purple-600" data-dashboard-updates-target="processingRate"><%= @processing_rate %>%</p>
         <p class="text-sm text-slate-500">Success Rate</p>
       </div>
       <div class="rounded-lg border border-slate-200 bg-white p-3">
-        <p class="text-xl font-bold text-green-600"><%= @processed_keywords %></p>
+        <p class="text-xl font-bold text-green-600" data-dashboard-updates-target="processedKeywords"><%= @processed_keywords %></p>
         <p class="text-sm text-slate-500">Processed</p>
       </div>
       <div class="rounded-lg border border-slate-200 bg-white p-3">
-        <p class="text-xl font-bold text-blue-600"><%= @total_uploads %></p>
+        <p class="text-xl font-bold text-blue-600" data-dashboard-updates-target="totalUploads"><%= @total_uploads %></p>
         <p class="text-sm text-slate-500">Total Uploads</p>
       </div>
     </div>
@@ -78,7 +81,7 @@
               <th scope="col" class="px-3 py-2 text-left text-sm font-medium text-slate-500">FROM</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100">
+          <tbody class="divide-y divide-slate-100" data-dashboard-updates-target="tableBody">
             <% @keywords.each do |keyword| %>
               <tr class="hover:bg-slate-50">
                 <td class="px-3 py-2 text-sm font-medium text-slate-900">
