@@ -20,6 +20,11 @@ gem "jbuilder"
 # Authentication and authorization
 gem "devise"
 gem "pundit"
+gem "jwt"
+
+# API documentation
+gem "rswag"
+gem "ostruct"
 
 # Pagination and soft-delete helpers
 gem "pagy"
@@ -55,6 +60,7 @@ group :development, :test do
   gem "dotenv-rails"
   gem "rspec-rails", "~> 8.0.0"
   gem "factory_bot", "~> 6.5"
+  gem "rswag-specs"
 end
 
 group :development do
@@ -68,6 +74,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "simplecov", require: false
+  gem "rails-controller-testing"
 end
 
 gem "httparty", "~> 0.23.1"
