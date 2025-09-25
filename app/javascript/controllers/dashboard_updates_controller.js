@@ -29,7 +29,14 @@ export default class extends Controller {
 
   async poll() {
     try {
-      const response = await fetch(this.urlValue || '/dashboard.json', {
+      // Get current page parameter from URL if we're paginated
+      const currentPage = this.getCurrentPage()
+      const url = new URL(this.urlValue || '/dashboard.json', window.location.origin)
+      if (currentPage > 1) {
+        url.searchParams.set('page', currentPage)
+      }
+
+      const response = await fetch(url, {
         headers: { 'Accept': 'application/json' }
       })
 
@@ -45,6 +52,12 @@ export default class extends Controller {
     } catch (error) {
       console.error('Dashboard update failed:', error)
     }
+  }
+
+  getCurrentPage() {
+    // Extract page number from current URL
+    const urlParams = new URLSearchParams(window.location.search)
+    return parseInt(urlParams.get('page')) || 1
   }
 
   updateUI(data) {
