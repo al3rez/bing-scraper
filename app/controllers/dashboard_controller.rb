@@ -7,14 +7,13 @@ class DashboardController < ApplicationController
     # Pagination works for both HTML and JSON requests
     @pagy, @keywords = pagy(current_user.keywords.active_first.includes(:keyword_upload), items: 20)
 
-    # KPIs
-    @total_keywords = current_user.keywords.count
-    @processed_keywords = current_user.keywords.where.not(status: "pending").count
-    @total_uploads = current_user.keyword_uploads.count
-    @processing_rate = (@total_keywords > 0) ? (@processed_keywords.to_f / @total_keywords * 100).round(1) : 0
-
-    # Check if we have pending/processing keywords for polling
-    @has_pending_keywords = current_user.keywords.where(status: [ :pending, :processing ]).exists?
+    # Dashboard statistics
+    dashboard_stats = DashboardQuery.new(current_user).call
+    @total_keywords = dashboard_stats[:total_keywords]
+    @processed_keywords = dashboard_stats[:processed_keywords]
+    @total_uploads = dashboard_stats[:total_uploads]
+    @processing_rate = dashboard_stats[:processing_rate]
+    @has_pending_keywords = dashboard_stats[:has_pending_keywords]
 
     respond_to do |format|
       format.html

@@ -188,14 +188,14 @@ RSpec.describe "KeywordUploads", type: :request do
     end
 
     context "when file is blank" do
-      it "redirects with an alert" do
+      it "returns unprocessable entity with error" do
         user = User.create!(email: "uploader@example.com", password: "password123")
         sign_in(user)
 
         post keyword_uploads_path, params: { keyword_upload: { file: nil } }
 
-        expect(response).to redirect_to(authenticated_root_path)
-        expect(flash[:alert]).to eq("Please choose a CSV file to upload.")
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(flash[:alert]).to include("Please select a CSV file")
       end
     end
 
@@ -214,8 +214,8 @@ RSpec.describe "KeywordUploads", type: :request do
           }
         }
 
-        expect(response).to redirect_to(authenticated_root_path)
-        expect(flash[:alert]).to match("Invalid CSV file: File doesn't appear to contain valid CSV data")
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(flash[:alert]).to include("No keywords found")
 
         # Cleanup
         empty_file.close!
@@ -238,7 +238,7 @@ RSpec.describe "KeywordUploads", type: :request do
           }
         }
 
-        expect(response).to redirect_to(authenticated_root_path)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(flash[:alert]).to include('File size must be less than')
 
         large_file.close!
@@ -260,8 +260,8 @@ RSpec.describe "KeywordUploads", type: :request do
           }
         }
 
-        expect(response).to redirect_to(authenticated_root_path)
-        expect(flash[:alert]).to include('Invalid CSV file')
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(flash[:alert]).to include('File must be a CSV file')
 
         text_file.close!
       end
@@ -284,8 +284,8 @@ RSpec.describe "KeywordUploads", type: :request do
           }
         }
 
-        expect(response).to redirect_to(authenticated_root_path)
-        expect(flash[:alert]).to eq("We couldn't process that file. Please try again.")
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(flash[:alert]).to include("An error occurred while processing your file")
 
         csv_file.close!
       end

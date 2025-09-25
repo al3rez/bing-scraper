@@ -278,61 +278,59 @@ RSpec.describe 'Keywords', type: :request do
     end
   end
 
-  describe 'private helper methods' do
-    context 'keyword_status_text' do
+  describe 'KeywordPresenter' do
+    context 'status_text' do
       it 'returns correct text for pending status' do
-        controller = KeywordsController.new
         keyword = build(:keyword, status: 'pending')
+        presenter = KeywordPresenter.new(keyword)
 
-        expect(controller.send(:keyword_status_text, keyword)).to eq('Queued')
+        expect(presenter.status_text).to eq('Queued')
       end
 
       it 'returns correct text for processing status' do
-        controller = KeywordsController.new
         keyword = build(:keyword, status: 'processing')
+        presenter = KeywordPresenter.new(keyword)
 
-        expect(controller.send(:keyword_status_text, keyword)).to eq('Scraping...')
+        expect(presenter.status_text).to eq('Scraping...')
       end
 
       it 'returns correct text for completed status with scraped_at' do
-        controller = KeywordsController.new
         keyword = build(:keyword, status: 'completed', scraped_at: 2.hours.ago)
+        presenter = KeywordPresenter.new(keyword)
 
-        result = controller.send(:keyword_status_text, keyword)
+        result = presenter.status_text
         expect(result).to include('Scraped')
         expect(result).to include('ago')
       end
 
       it 'returns correct text for completed status without scraped_at' do
-        controller = KeywordsController.new
         keyword = build(:keyword, status: 'completed', scraped_at: nil)
+        presenter = KeywordPresenter.new(keyword)
 
-        expect(controller.send(:keyword_status_text, keyword)).to eq('Completed')
+        expect(presenter.status_text).to eq('Completed')
       end
 
       it 'returns correct text for failed status' do
-        controller = KeywordsController.new
         keyword = build(:keyword, status: 'failed')
+        presenter = KeywordPresenter.new(keyword)
 
-        expect(controller.send(:keyword_status_text, keyword)).to eq('Failed')
+        expect(presenter.status_text).to eq('Failed')
       end
     end
 
-    context 'keyword_status_class' do
+    context 'status_class' do
       it 'returns correct CSS classes for each status' do
-        controller = KeywordsController.new
-
         pending_keyword = build(:keyword, status: 'pending')
-        expect(controller.send(:keyword_status_class, pending_keyword)).to eq('text-xs text-slate-600')
+        expect(KeywordPresenter.new(pending_keyword).status_class).to eq('text-xs text-slate-600')
 
         processing_keyword = build(:keyword, status: 'processing')
-        expect(controller.send(:keyword_status_class, processing_keyword)).to eq('text-xs text-yellow-600')
+        expect(KeywordPresenter.new(processing_keyword).status_class).to eq('text-xs text-yellow-600')
 
         completed_keyword = build(:keyword, status: 'completed')
-        expect(controller.send(:keyword_status_class, completed_keyword)).to eq('text-xs text-green-600')
+        expect(KeywordPresenter.new(completed_keyword).status_class).to eq('text-xs text-green-600')
 
         failed_keyword = build(:keyword, status: 'failed')
-        expect(controller.send(:keyword_status_class, failed_keyword)).to eq('text-xs text-red-600')
+        expect(KeywordPresenter.new(failed_keyword).status_class).to eq('text-xs text-red-600')
       end
     end
   end
