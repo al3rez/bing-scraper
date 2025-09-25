@@ -18,15 +18,7 @@ class KeywordsController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        render json: {
-          status: @keyword.status,
-          ads_count: @keyword.ads_count,
-          links_count: @keyword.links_count,
-          ads: @ads,
-          links: @links,
-          status_text: keyword_presenter.status_text,
-          status_class: keyword_presenter.status_class
-        }
+        render json: KeywordDetailSerializer.new(@keyword).serializable_hash[:data][:attributes]
       end
     end
   end

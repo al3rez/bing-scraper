@@ -28,15 +28,7 @@ class DashboardController < ApplicationController
           current_page: @pagy.page,
           total_pages: @pagy.pages,
           keywords: @keywords.map do |keyword|
-            {
-              id: keyword.id,
-              phrase: keyword.phrase,
-              status: keyword.status,
-              ads_count: keyword.ads_count,
-              links_count: keyword.links_count,
-              scraped_at: keyword.scraped_at&.iso8601,
-              keyword_upload_original_filename: keyword.keyword_upload_original_filename
-            }
+            DashboardKeywordSerializer.new(keyword).serializable_hash[:data][:attributes].merge(id: keyword.id)
           end
         }
       end

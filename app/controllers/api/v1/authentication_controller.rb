@@ -9,10 +9,7 @@ class Api::V1::AuthenticationController < Api::V1::BaseController
       token = generate_jwt_token(user)
       render json: {
         token: token,
-        user: {
-          id: user.id,
-          email: user.email
-        }
+        user: UserSerializer.new(user).serializable_hash[:data][:attributes].merge(id: user.id)
       }, status: :ok
     else
       render json: { error: "Invalid credentials" }, status: :unauthorized

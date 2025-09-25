@@ -8,53 +8,22 @@ class Api::V1::KeywordsController < Api::V1::BaseController
 
     render json: {
       keywords: keywords.map do |keyword|
-        {
-          id: keyword.id,
-          phrase: keyword.phrase,
-          status: keyword.status,
-          ads_count: keyword.ads_count,
-          links_count: keyword.links_count,
-          upload_filename: keyword.keyword_upload_original_filename,
-          created_at: keyword.created_at,
-          updated_at: keyword.updated_at
-        }
+        KeywordSerializer.new(keyword).serializable_hash[:data][:attributes].merge(id: keyword.id)
       end
     }
   end
 
   def show
     render json: {
-      keyword: {
-        id: @keyword.id,
-        phrase: @keyword.phrase,
-        status: @keyword.status,
-        ads_count: @keyword.ads_count,
-        links_count: @keyword.links_count,
-        upload_filename: @keyword.keyword_upload_original_filename,
-        created_at: @keyword.created_at,
-        updated_at: @keyword.updated_at,
-        has_html_pages: @keyword.html_pages.attached?
-      }
+      keyword: KeywordSerializer.new(@keyword).serializable_hash[:data][:attributes].merge(id: @keyword.id)
     }
   end
 
   def search_results
+    data = KeywordSearchResultsSerializer.new(@keyword).serializable_hash[:data][:attributes]
     render json: {
-      keyword: {
-        id: @keyword.id,
-        phrase: @keyword.phrase,
-        status: @keyword.status,
-        ads_count: @keyword.ads_count,
-        links_count: @keyword.links_count,
-        upload_filename: @keyword.keyword_upload_original_filename,
-        created_at: @keyword.created_at,
-        updated_at: @keyword.updated_at
-      },
-      search_results: {
-        ads_count: @keyword.ads_count,
-        links_count: @keyword.links_count,
-        html_pages_count: @keyword.html_pages.count
-      }
+      keyword: data.except(:search_results).merge(id: @keyword.id),
+      search_results: data[:search_results]
     }
   end
 
