@@ -2,6 +2,8 @@
 
 Rails app that scrapes Bing search results at scale. Upload CSV of keywords, get search data back.
 
+![App Preview](public/preview.png)
+
 ## Features
 
 - CSV upload with 1-100 keywords
