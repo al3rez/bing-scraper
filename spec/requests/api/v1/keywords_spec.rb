@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::Keywords', type: :request do
-
   describe 'GET /api/v1/keywords' do
     context 'when authentication is valid' do
       it 'returns user keywords in active_first order and excludes other user data' do

@@ -78,8 +78,8 @@ RSpec.describe 'Keywords', type: :request do
                         keyword_upload: keyword_upload,
                         phrase: 'ruby programming',
                         status: 'completed',
-                        ads_data: [{ 'title' => 'Test Ad', 'url' => 'https://ad.example.com' }],
-                        links_data: [{ 'title' => 'Test Link', 'url' => 'https://example.com' }])
+                        ads_data: [ { 'title' => 'Test Ad', 'url' => 'https://ad.example.com' } ],
+                        links_data: [ { 'title' => 'Test Link', 'url' => 'https://example.com' } ])
 
         sign_in user
         get keyword_path(keyword)
@@ -87,8 +87,8 @@ RSpec.describe 'Keywords', type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.body).to include('ruby programming')
         expect(assigns(:keyword)).to eq(keyword)
-        expect(assigns(:ads)).to eq([{ 'title' => 'Test Ad', 'url' => 'https://ad.example.com' }])
-        expect(assigns(:links)).to eq([{ 'title' => 'Test Link', 'url' => 'https://example.com' }])
+        expect(assigns(:ads)).to eq([ { 'title' => 'Test Ad', 'url' => 'https://ad.example.com' } ])
+        expect(assigns(:links)).to eq([ { 'title' => 'Test Link', 'url' => 'https://example.com' } ])
       end
 
       it 'handles nil ads and links data' do
@@ -143,7 +143,7 @@ RSpec.describe 'Keywords', type: :request do
                         keyword_upload: keyword_upload,
                         phrase: 'test keyword',
                         ads_data: [],
-                        links_data: ['https://example.com', 'https://test.com'])
+                        links_data: [ 'https://example.com', 'https://test.com' ])
 
         sign_in user
         get keyword_path(keyword)
@@ -166,8 +166,8 @@ RSpec.describe 'Keywords', type: :request do
                         status: 'completed',
                         ads_count: 3,
                         links_count: 50,
-                        ads_data: [{ 'title' => 'Test Ad' }],
-                        links_data: [{ 'title' => 'Test Link' }])
+                        ads_data: [ { 'title' => 'Test Ad' } ],
+                        links_data: [ { 'title' => 'Test Link' } ])
 
         sign_in user
         get keyword_path(keyword), headers: { 'Accept' => 'application/json' }

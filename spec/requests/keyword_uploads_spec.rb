@@ -57,7 +57,7 @@ RSpec.describe "KeywordUploads", type: :request do
         user = create(:user)
         sign_in user
 
-        csv_file = Tempfile.new(['test_keywords', '.csv']).tap do |file|
+        csv_file = Tempfile.new([ 'test_keywords', '.csv' ]).tap do |file|
           file.write("keyword\nruby on rails\njavascript\nvue.js\n")
           file.rewind
         end
@@ -91,7 +91,7 @@ RSpec.describe "KeywordUploads", type: :request do
         user = create(:user)
         sign_in user
 
-        large_file = Tempfile.new(['large_keywords', '.csv'])
+        large_file = Tempfile.new([ 'large_keywords', '.csv' ])
         large_content = "keyword\n" + ("x" * 5242881) # Just over 5MB
         large_file.write(large_content)
         large_file.rewind
@@ -112,7 +112,7 @@ RSpec.describe "KeywordUploads", type: :request do
         user = create(:user)
         sign_in user
 
-        invalid_file = Tempfile.new(['invalid', '.txt'])
+        invalid_file = Tempfile.new([ 'invalid', '.txt' ])
         invalid_file.write("This is not a CSV file")
         invalid_file.rewind
 
@@ -132,7 +132,7 @@ RSpec.describe "KeywordUploads", type: :request do
         user = create(:user)
         sign_in user
 
-        csv_file = Tempfile.new(['test', '.csv'])
+        csv_file = Tempfile.new([ 'test', '.csv' ])
         csv_file.write("keyword\ntest\n")
         csv_file.rewind
 
@@ -227,7 +227,7 @@ RSpec.describe "KeywordUploads", type: :request do
         user = create(:user)
         sign_in user
 
-        large_file = Tempfile.new(['large_keywords', '.csv'])
+        large_file = Tempfile.new([ 'large_keywords', '.csv' ])
         large_content = "keyword\n" + ("x" * 5242881) # Just over 5MB
         large_file.write(large_content)
         large_file.rewind
@@ -250,7 +250,7 @@ RSpec.describe "KeywordUploads", type: :request do
         user = create(:user)
         sign_in user
 
-        text_file = Tempfile.new(['test', '.txt'])
+        text_file = Tempfile.new([ 'test', '.txt' ])
         text_file.write("This is not a CSV")
         text_file.rewind
 
@@ -272,7 +272,7 @@ RSpec.describe "KeywordUploads", type: :request do
         user = create(:user)
         sign_in user
 
-        csv_file = Tempfile.new(['test', '.csv'])
+        csv_file = Tempfile.new([ 'test', '.csv' ])
         csv_file.write("keyword\ntest\n")
         csv_file.rewind
 

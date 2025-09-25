@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::KeywordUploads', type: :request do
-
   describe 'POST /api/v1/keyword_uploads' do
     context 'when authentication is valid and CSV file is valid' do
       it 'successfully uploads and processes the file' do
@@ -9,7 +8,7 @@ RSpec.describe 'Api::V1::KeywordUploads', type: :request do
         jwt_token = generate_jwt_token(user)
         auth_headers = { 'Authorization' => "Bearer #{jwt_token}" }
 
-        csv_file = Tempfile.new(['test_keywords', '.csv']).tap do |file|
+        csv_file = Tempfile.new([ 'test_keywords', '.csv' ]).tap do |file|
           file.write("keyword\nruby on rails\njavascript\nvue.js\n")
           file.rewind
         end
@@ -44,7 +43,7 @@ RSpec.describe 'Api::V1::KeywordUploads', type: :request do
         jwt_token = generate_jwt_token(user)
         auth_headers = { 'Authorization' => "Bearer #{jwt_token}" }
 
-        csv_file = Tempfile.new(['test_keywords', '.csv']).tap do |file|
+        csv_file = Tempfile.new([ 'test_keywords', '.csv' ]).tap do |file|
           file.write("keyword\nruby on rails\njavascript\nvue.js\n")
           file.rewind
         end
@@ -83,7 +82,7 @@ RSpec.describe 'Api::V1::KeywordUploads', type: :request do
         jwt_token = generate_jwt_token(user)
         auth_headers = { 'Authorization' => "Bearer #{jwt_token}" }
 
-        large_file = Tempfile.new(['large_keywords', '.csv'])
+        large_file = Tempfile.new([ 'large_keywords', '.csv' ])
         # Create a file just over 5MB (5MB = 5,242,880 bytes)
         large_content = "keyword\n" + ("x" * 5242880) + "\n"
         large_file.write(large_content)
@@ -111,7 +110,7 @@ RSpec.describe 'Api::V1::KeywordUploads', type: :request do
         jwt_token = generate_jwt_token(user)
         auth_headers = { 'Authorization' => "Bearer #{jwt_token}" }
 
-        text_file = Tempfile.new(['test', '.txt'])
+        text_file = Tempfile.new([ 'test', '.txt' ])
         text_file.write('This is not a CSV file')
         text_file.rewind
 
@@ -135,7 +134,7 @@ RSpec.describe 'Api::V1::KeywordUploads', type: :request do
         jwt_token = generate_jwt_token(user)
         auth_headers = { 'Authorization' => "Bearer #{jwt_token}" }
 
-        empty_file = Tempfile.new(['empty', '.csv'])
+        empty_file = Tempfile.new([ 'empty', '.csv' ])
         empty_file.write('')
         empty_file.rewind
 
@@ -159,7 +158,7 @@ RSpec.describe 'Api::V1::KeywordUploads', type: :request do
         jwt_token = generate_jwt_token(user)
         auth_headers = { 'Authorization' => "Bearer #{jwt_token}" }
 
-        invalid_file = Tempfile.new(['invalid', '.csv'])
+        invalid_file = Tempfile.new([ 'invalid', '.csv' ])
         invalid_file.write("   \n   \n   ")
         invalid_file.rewind
 
@@ -181,7 +180,7 @@ RSpec.describe 'Api::V1::KeywordUploads', type: :request do
 
     context 'when authentication is missing' do
       it 'returns unauthorized error' do
-        csv_file = Tempfile.new(['test_keywords', '.csv']).tap do |file|
+        csv_file = Tempfile.new([ 'test_keywords', '.csv' ]).tap do |file|
           file.write("keyword\nruby on rails\njavascript\nvue.js\n")
           file.rewind
         end
@@ -203,7 +202,7 @@ RSpec.describe 'Api::V1::KeywordUploads', type: :request do
       it 'returns unauthorized error' do
         headers = { 'Authorization' => 'Bearer invalid_token' }
 
-        csv_file = Tempfile.new(['test_keywords', '.csv']).tap do |file|
+        csv_file = Tempfile.new([ 'test_keywords', '.csv' ]).tap do |file|
           file.write("keyword\nruby on rails\njavascript\nvue.js\n")
           file.rewind
         end
@@ -228,7 +227,7 @@ RSpec.describe 'Api::V1::KeywordUploads', type: :request do
 
         allow(KeywordIngestionService).to receive(:new).and_raise(StandardError.new('Unexpected error'))
 
-        csv_file = Tempfile.new(['test_keywords', '.csv']).tap do |file|
+        csv_file = Tempfile.new([ 'test_keywords', '.csv' ]).tap do |file|
           file.write("keyword\nruby on rails\njavascript\nvue.js\n")
           file.rewind
         end

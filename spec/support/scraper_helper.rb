@@ -30,7 +30,7 @@ module ScraperHelper
     allow(mock_mouse).to receive(:move)
     allow(mock_mouse).to receive(:scroll_to)
 
-    [mock_browser, mock_page]
+    [ mock_browser, mock_page ]
   end
 
   def stub_scraper_delays(scraper_instance)

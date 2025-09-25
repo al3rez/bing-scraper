@@ -1,6 +1,6 @@
 class Api::V1::AuthenticationController < Api::V1::BaseController
   # Skip authentication for sign_in endpoint
-  skip_before_action :authenticate_user!, only: [:sign_in]
+  skip_before_action :authenticate_user!, only: [ :sign_in ]
 
   def sign_in
     user = User.find_by(email: sign_in_params[:email])
