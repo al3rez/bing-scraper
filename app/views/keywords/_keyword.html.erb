@@ -1,0 +1,33 @@
+<tr class="hover:bg-slate-50">
+  <td class="px-3 py-2 text-sm font-medium text-slate-900">
+    <%= link_to sanitize(keyword.phrase), keyword_path(keyword), class: "text-blue-600 hover:text-blue-800 underline" %>
+  </td>
+  <td class="px-3 py-2 text-sm text-slate-600"><%= keyword.ads_count %></td>
+  <td class="px-3 py-2 text-sm text-slate-600"><%= keyword.links_count %></td>
+  <td class="px-3 py-2 text-sm">
+    <% if keyword.status == "pending" %>
+      <span class="inline-flex items-center gap-1 text-slate-500">
+        <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>
+        Queued
+      </span>
+    <% elsif keyword.status == "processing" %>
+      <span class="inline-flex items-center gap-1 text-yellow-600">
+        <span class="h-1.5 w-1.5 rounded-full bg-yellow-500 animate-pulse"></span>
+        Scraping...
+      </span>
+    <% elsif keyword.status == "completed" && keyword.scraped_at %>
+      <span class="inline-flex items-center gap-1 text-green-600">
+        <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+        <%= time_ago_in_words(keyword.scraped_at) %> ago
+      </span>
+    <% elsif keyword.status == "failed" %>
+      <span class="inline-flex items-center gap-1 text-red-600">
+        <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+        Failed
+      </span>
+    <% else %>
+      <span class="text-slate-400">-</span>
+    <% end %>
+  </td>
+  <td class="px-3 py-2 text-sm text-slate-500 truncate max-w-32"><%= sanitize(keyword.keyword_upload_original_filename) %></td>
+</tr>

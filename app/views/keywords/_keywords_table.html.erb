@@ -1,0 +1,30 @@
+<div class="rounded-lg border border-slate-200 bg-white">
+  <div class="border-b border-slate-200 px-4 py-3">
+    <h2 class="text-lg font-medium text-slate-900">Keywords</h2>
+  </div>
+
+  <% if keywords.any? %>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
+          <tr>
+            <th scope="col" class="px-3 py-2 text-left text-sm font-medium text-slate-500">KEYWORD</th>
+            <th scope="col" class="px-3 py-2 text-left text-sm font-medium text-slate-500">ADS</th>
+            <th scope="col" class="px-3 py-2 text-left text-sm font-medium text-slate-500">LINKS</th>
+            <th scope="col" class="px-3 py-2 text-left text-sm font-medium text-slate-500">STATUS</th>
+            <th scope="col" class="px-3 py-2 text-left text-sm font-medium text-slate-500">FROM</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100" data-dashboard-updates-target="tableBody">
+          <%= render partial: 'keywords/keyword', collection: keywords %>
+        </tbody>
+      </table>
+    </div>
+
+    <%= render "shared/pagination", pagy: pagy, item_name: "keywords" %>
+  <% else %>
+    <div class="p-4 text-sm text-slate-600">
+      No keywords yet. Upload a CSV to start scraping.
+    </div>
+  <% end %>
+</div>
