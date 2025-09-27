@@ -1,6 +1,6 @@
 <tr class="hover:bg-slate-50">
   <td class="px-3 py-2 text-sm font-medium text-slate-900">
-    <%= link_to sanitize(keyword.phrase), keyword_path(keyword), class: "text-blue-600 hover:text-blue-800 underline" %>
+    <%= link_to strip_tags(keyword.phrase), keyword_path(keyword), class: "text-blue-600 hover:text-blue-800 underline" %>
   </td>
   <td class="px-3 py-2 text-sm text-slate-600"><%= keyword.ads_count %></td>
   <td class="px-3 py-2 text-sm text-slate-600"><%= keyword.links_count %></td>
@@ -29,5 +29,5 @@
       <span class="text-slate-400">-</span>
     <% end %>
   </td>
-  <td class="px-3 py-2 text-sm text-slate-500 truncate max-w-32"><%= sanitize(keyword.keyword_upload_original_filename) %></td>
+  <td class="px-3 py-2 text-sm text-slate-500 truncate max-w-32"><%= strip_tags(keyword.keyword_upload_original_filename) %></td>
 </tr>

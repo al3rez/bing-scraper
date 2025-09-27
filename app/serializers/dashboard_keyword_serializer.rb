@@ -4,7 +4,7 @@ class DashboardKeywordSerializer
   attributes :status, :ads_count, :links_count
 
   attribute :phrase do |keyword|
-    ActionController::Base.helpers.sanitize(keyword.phrase)
+    ActionController::Base.helpers.strip_tags(keyword.phrase)
   end
 
   attribute :scraped_at do |keyword|
@@ -12,6 +12,6 @@ class DashboardKeywordSerializer
   end
 
   attribute :keyword_upload_original_filename do |keyword|
-    ActionController::Base.helpers.sanitize(keyword.keyword_upload_original_filename)
+    ActionController::Base.helpers.strip_tags(keyword.keyword_upload_original_filename)
   end
 end
