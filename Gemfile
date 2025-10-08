@@ -82,6 +82,6 @@ group :test do
   gem "rails-controller-testing"
 end
 
-gem "httparty", "~> 0.23.1"
+gem "httparty", "~> 0.23.2"
 gem "nokogiri", "~> 1.18"
 gem "ferrum", "~> 0.17.1"
